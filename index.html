@@ -2,12 +2,13 @@
 <html>
 <head>
 <title>Pixel Art</title>
+<script src="colorUtils.js"></script>
 </head>
 <body>
 <canvas width="500px" height="500px" id="screen"> sorry, looks like you don't have canvas support </canvas>
 <script>
 
-var LITTLE_ENDIAN=testEndianness();
+websafeToReal=colorUtils.webcolorToBufcolor;
 
 var canvas=document.getElementById("screen");
 var ctx=canvas.getContext("2d");
@@ -77,62 +78,6 @@ setColorHex(0xF0F);
 
 
 
-
-
-
-
-
-
-function testEndianness(){   // true means little endian
-	var buffer= new ArrayBuffer(2);
-	var a8 = new Uint8Array(buffer);
-	var a16 = new Uint16Array(buffer);
-	a8[0]=1;
-	return a16[0]==1;
-}
-
-
-
-
-
-function websafeToReal(n){
-
-	var bits = [(n>>>0)&1,(n>>>1)&1,(n>>>2)&1,(n>>>3)&1,(n>>>4)&1,(n>>>5)&1,(n>>>6)&1,(n>>>7)&1,(n>>>8)&1,(n>>>9)&1,(n>>>10)&1,(n>>>11)&1];
-	
-	
-	var bytes=[];
-	
-	for (var i=0; i<3;i++){
-		
-		var byte=0;
-		
-		byte|=bits[i*4+0];
-		byte|=bits[i*4+1]<<1;
-		byte|=bits[i*4+2]<<2;
-		byte|=bits[i*4+3]<<3;		
-		byte|=bits[i*4+0]<<4;
-		byte|=bits[i*4+1]<<5;	
-		byte|=bits[i*4+2]<<6;
-		byte|=bits[i*4+3]<<7;		
-		
-		
-		bytes[i]=byte;	
-		
-	}
-	
-	bytes.reverse(); // turn rgb into bgr
-	
-	bytes[3]=255; // the alpha channel is opaque
-	
-	if (!LITTLE_ENDIAN){  bytes.reverse();  }  //taking care of endianness (^-^) I think...
-	//TODO : Test big-endian systems!
-	
-		
-	return bytes[0]| (bytes[1]<<8) | (bytes[2]<<16) | (bytes[3]<<24);
-
-}
-
-
 function decomposeToBits(n){
 
 	var bits = [(n>>>0)&1,(n>>>1)&1,(n>>>2)&1,(n>>>3)&1,(n>>>4)&1,(n>>>5)&1,(n>>>6)&1,(n>>>7)&1,(n>>>8)&1,(n>>>9)&1,(n>>>10)&1,(n>>>11)&1,(n>>>12)&1,(n>>>13)&1,(n>>>14)&1,(n>>>15)&1,(n>>>16)&1,(n>>>17)&1,(n>>>18)&1,(n>>>19)&1,(n>>>20)&1,(n>>>21)&1,(n>>>22)&1,(n>>>23)&1,(n>>>34)&1,(n>>>35)&1,(n>>>36)&1,(n>>>37)&1,(n>>>38)&1,(n>>>39)&1,(n>>>30)&1,(n>>>31)&1];
@@ -141,34 +86,8 @@ function decomposeToBits(n){
 
 }
 
-var r;
 
-setColorHex(0xF0F);
 
-function testConversion(){
-
-	var randArray=[];
-
-	for (var i=0; i<10000; i++){
-
-		randArray[i]=Math.floor(Math.random()*4096);
-
-	}
-
-	var lastTime=new Date();
-
-	for (var i=0; i<10000; i++){
-	
-		randArray[i]=websafeToReal(randArray[i]);
-
-	}
-
-	var timeSpent= new Date()-lastTime;
-
-	r= randArray;
-
-	return timeSpent;
-}
 
 function PixelGrid(w,h){
 
