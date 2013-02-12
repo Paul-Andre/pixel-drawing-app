@@ -7,20 +7,46 @@
 <canvas width="500px" height="500px" id="screen"> sorry, looks like you don't have canvas support </canvas>
 <script>
 
+
+function testEndianness(){   // true means little endian
+	var buffer= new ArrayBuffer(2);
+	var a8 = new Uint8Array(buffer);
+	var a16 = new Uint16Array(buffer);
+	a8[0]=1;
+	return a16[0]==1;
+}
+
+var LITTLE_ENDIAN=testEndianness();
+
+
+
 function websafeToReal(n){
 
 	var bits = [(n>>0)&1,(n>>1)&1,(n>>2)&1,(n>>3)&1,(n>>4)&1,(n>>5)&1,(n>>6)&1,(n>>7)&1,(n>>8)&1,(n>>9)&1,(n>>10)&1,(n>>11)&1];
 	
 	
-	var m=0; //the "real number"
+	var bytes=[];
 	
-	for (var i, i<bits.length,i++){
+	for (var i=0; i<3;i++){
 		
-		m|=(bits[i]<<(i*2));
-		m|=(bits[i]<<(i*2+1));
+		var byte=0;
+		
+		byte|=bits[i*4+0];
+		byte|=bits[i*4+1]<<1;
+		byte|=bits[i*4+2]<<2;
+		byte|=bits[i*4+3]<<3;	
+		
+		bytes[i]=byte;	
 		
 	}
-	return m;
+	
+	if (!LITTLE_ENDIAN){  bytes.reverse();  }
+	
+	
+	bytes[3]=255; //the alpha
+	
+	
+	return bytes;
 
 }
 
@@ -33,6 +59,20 @@ function decomposeToBits(n){
 
 }
 
+
+
+
+var lastTime=new Date();
+
+for (var i=0; i<1000; i++){
+	
+	
+
+}
+
+var timeSpent= lastTime-new Date();
+return timeSpent;
+}
 
 function PixelGrid(w,h){
 
