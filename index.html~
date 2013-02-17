@@ -12,10 +12,33 @@ webcolorToBufcolor=colorUtils.webcolorToBufcolor;
 
 var canvas=document.getElementById("screen");
 var ctx=canvas.getContext("2d");
+
+
+function WebcolorGrid(){
+
+	//this.
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var imageData=ctx.createImageData(100,100)
 var data32=new Int32Array(imageData.data.buffer);
 
-var color= webcolorToBufcolor(0xF0a);
+
+var color= webcolorToBufcolor(0xF04);
 	
 for (var i=0; i<data32.length;i++){
 
@@ -25,6 +48,15 @@ data32[i]=color;
 }
 
 ctx.putImageData(imageData,0,0);
+
+console.log(imageData);
+
+
+
+
+
+
+
 
 
 
