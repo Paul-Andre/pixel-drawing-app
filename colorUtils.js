@@ -19,8 +19,8 @@
 
 (function(){
 
-	
 	var LITTLE_ENDIAN=testEndianness();
+
 
 
 ///////////////////////////////////////////

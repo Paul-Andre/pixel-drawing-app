@@ -1,5 +1,9 @@
 ///////////////////////////////////
 // 
+//   
+//        colorUtils.js
+//
+//
 //   Unless otherwise stated, all the colors are 12 bit, with 4 bits for every channel
 //
 //   Webcolor is a two byte color format of my making, that has a 12 bit precision
@@ -18,14 +22,6 @@
 	
 	var LITTLE_ENDIAN=testEndianness();
 
-////////////////////////////////////////////
-	function testEndianness(){   // true means little endian
-		var buffer= new ArrayBuffer(2);
-		var a8 = new Uint8Array(buffer);
-		var a16 = new Uint16Array(buffer);
-		a8[0]=1;
-		return a16[0]==1;
-	}
 
 ///////////////////////////////////////////
 	function rgbToWebcolor(r,g,b){
@@ -114,7 +110,6 @@ function profileWebcolorToBufColorConversion(times){
 
 
 return {
-			"testEndianness": testEndianness,
 			"webcolorToBufcolor": webcolorToBufcolor,
 			"profileWebcolorToBufColorConversion": profileWebcolorToBufColorConversion,
 			"rgbToWebcolor":rgbToWebcolor,

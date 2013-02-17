@@ -2,32 +2,85 @@
 <html>
 <head>
 <title>Pixel Art</title>
+<script src="coreUtils.js"></script>
 <script src="colorUtils.js"></script>
 </head>
 <body>
-<canvas width="500px" height="500px" id="screen"> sorry, looks like you don't have canvas support </canvas>
+<canvas width="500px" height="500px" id="screen" style="image-rendering: optimizeSpeed;
+image-rendering: -moz-crisp-edges;
+image-rendering: crisp-edges
+image-rendering: -webkit-optimize-contrast;
+-ms-interpolation-mode:nearest-neighbor;
+image-rendering: -moz-crisp-edges;         /* Firefox */
+        image-rendering:   -o-crisp-edges;         /* Opera */
+        image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
+        image-rendering: crisp-edges;
+        -ms-interpolation-mode: nearest-neighbor;  /* IE (non-standard property) */"> sorry, looks like your browser doesn't have canvas support </canvas>
 <script>
 
-webcolorToBufcolor=colorUtils.webcolorToBufcolor;
+var webcolorToBufcolor=colorUtils.webcolorToBufcolor;
+var imageDataCreator=document.createElement("canvas").getContext("2d");
+
 
 var canvas=document.getElementById("screen");
 var ctx=canvas.getContext("2d");
 
 
-function WebcolorGrid(w,h,d){
+function WebcolorPicture(w,h,d16){
 
 	this.width=w;
 	this.height=h;
-	this.data=d;
+	this.data16=d16
+}
+
+////////////////////////////////////
+/*
+WebcolorPicture Transmission Format:
+
+w: Uint16
+h: Uint16
+data: Uint16[w*h]  (Webcolor)
+
+*/
+
+WebcolorPicture.fromTransmission=function(buffer){   //    TODO Find a way to chain extractions.
+
+
+	var dataView=new DataView(buffer);
+	var w= dataView.getUint16(0);
+	var h= dataView.getUint16(1);
 	
+	var data=new ArrayBuffer(w*h*2);
+	var data16=new Uint16Array(data);
+	
+	for(var i=0; i<w*h*2; i++){
+	
+		data16[i]=dataView.getUint16(i);
+	
+	}
+	
+	return new WebcolorPicture(w,h,data16);
+
 }
 
 
 
 
 
+WebcolorPicture.prototype.toImageData=function(){       // TODO Optimize to reuse values for less garbage collection
 
-
+	var imageData=imageDataCreator.createImageData(this.width,this.height);
+	
+	var data32=new Int32Array(imageData.data.buffer);
+	
+	for (var i=0; i<data32.length; i++){
+		
+		data32[i]=webcolorToBufcolor(this.data16[i]);
+	
+	}
+	
+	return imageData;
+}
 
 
 
@@ -37,7 +90,7 @@ var imageData=ctx.createImageData(100,100)
 var data32=new Int32Array(imageData.data.buffer);
 
 
-var color= webcolorToBufcolor(0xF04);
+var color= webcolorToBufcolor(0xf04);
 	
 for (var i=0; i<data32.length;i++){
 
@@ -48,7 +101,6 @@ data32[i]=color;
 
 ctx.putImageData(imageData,0,0);
 
-console.log(imageData);
 
 
 
@@ -56,7 +108,17 @@ console.log(imageData);
 
 
 
+var g = new WebcolorPicture(100,100,new Uint16Array(new ArrayBuffer(20000)));
 
+for(i=0;i<g.data16.length;i++){
+
+	g.data16[i]=i;
+
+}
+
+var gImageData=g.toImageData();
+console.log(gImageData);
+ctx.putImageData(gImageData,10,10);
 
 
 
