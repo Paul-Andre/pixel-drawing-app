@@ -8,15 +8,14 @@
 <canvas width="500px" height="500px" id="screen"> sorry, looks like you don't have canvas support </canvas>
 <script>
 
-websafeToReal=colorUtils.webcolorTo
+webcolorToBufcolor=colorUtils.webcolorToBufcolor;
 
 var canvas=document.getElementById("screen");
 var ctx=canvas.getContext("2d");
 var imageData=ctx.createImageData(100,100)
 var data32=new Int32Array(imageData.data.buffer);
 
-var color = websafeToReal(0xF0F);
-color = websafeToReal(0xF0F);
+var color= webcolorToBufcolor(0xF0a);
 	
 for (var i=0; i<data32.length;i++){
 
@@ -26,53 +25,6 @@ data32[i]=color;
 }
 
 ctx.putImageData(imageData,0,0);
-
-
-
-function setColorHex(n){
-
-	var imageData=ctx.createImageData(100,100)
-	var data32=new Int32Array(imageData.data.buffer);
-
-	var color = websafeToReal(n);
-
-	for (var i=0; i<data32.length;i++){
-
-		data32[i]=color;
-	}
-
-	ctx.putImageData(imageData,100,0);
-}
-
-
-function setColorRGB(r,g,b){
-
-	var color = websafeToReal( ((r&15)<<8) | ((g&15)<<4) | ((b&15)<<0));
-
-	for (var i=0; i<data32.length;i++){
-
-		data32[i]=color;
-	}
-
-	ctx.putImageData(imageData,0,0);
-}
-
-
-
-
-setColorHex(0xF0F);
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -86,13 +38,6 @@ function decomposeToBits(n){
 
 }
 
-
-
-
-function PixelGrid(w,h){
-
-
-}
 
 
 
