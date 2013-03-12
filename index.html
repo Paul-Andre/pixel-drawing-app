@@ -4,22 +4,30 @@
 <title>Pixel Art</title>
 <script src="coreUtils.js"></script>
 <script src="colorUtils.js"></script>
+
+    <style type="text/css">
+body {  padding: 0; overflow: hidden; }
+
+#screen {  position: relative; width: 100%; height: 100%; overflow: hidden;}
+
+    	.pageFiller {
+    	margin: 10;
+    		overflow: hidden;
+    	}
+    </style>
+
 </head>
 <body>
-<canvas width="500px" height="500px" id="screen" style="image-rendering: optimizeSpeed;
-image-rendering: -moz-crisp-edges;
-image-rendering: crisp-edges
-image-rendering: -webkit-optimize-contrast;
--ms-interpolation-mode:nearest-neighbor;
-image-rendering: -moz-crisp-edges;         /* Firefox */
-        image-rendering:   -o-crisp-edges;         /* Opera */
-        image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
-        image-rendering: crisp-edges;
-        -ms-interpolation-mode: nearest-neighbor;  /* IE (non-standard property) */"> sorry, looks like your browser doesn't have canvas support </canvas>
-<script>
+<div  style="top:0%; left:0%; position:fixed; width:200px; height:100%; background:red;"></div>
+<div  class="pageFiller">
+<canvas  id="screen" > sorry, looks like your browser doesn't have canvas support </canvas>
+        
+</div>
 
+<div  style="top:0%; right:100%; position:fixed; width:200px; height:100%; background:red;"></div>        
+<script>
 var webcolorToBufcolor=colorUtils.webcolorToBufcolor;
-var imageDataCreator=document.createElement("canvas").getContext("2d");
+var imageDataCreator=document.createElement("canvas").getContext("2d");  // I need to have a context to create imageData objects.
 
 
 var canvas=document.getElementById("screen");
@@ -28,9 +36,9 @@ var ctx=canvas.getContext("2d");
 
 function WebcolorPicture(w,h,d16){
 
-	this.width=w;
-	this.height=h;
-	this.data16=d16
+	this.width=w-20;
+	this.height=h-20;
+	this.data16=d16||new Uint16Array(new ArrayBuffer(w*h*2))
 }
 
 ////////////////////////////////////
@@ -67,20 +75,76 @@ WebcolorPicture.fromTransmission=function(buffer){   //    TODO Find a way to ch
 
 
 
-WebcolorPicture.prototype.toImageData=function(){       // TODO Optimize to reuse values for less garbage collection
+WebcolorPicture.prototype.toImageData=function(scale){       // TODO Optimize to reuse values for less garbage collection
+																// TODO find a way to use the gpu
+	
+	
+	var scale=scale||1;
+	
 
-	var imageData=imageDataCreator.createImageData(this.width,this.height);
+	var imageData=imageDataCreator.createImageData(this.width*scale,this.height*scale);
 	
 	var data32=new Int32Array(imageData.data.buffer);
 	
-	for (var i=0; i<data32.length; i++){
-		
-		data32[i]=webcolorToBufcolor(this.data16[i]);
 	
+	
+	if(scale==1) {
+	
+		for (var i=0; i<data32.length; i++){   //if 
+		
+			data32[i]=webcolorToBufcolor(this.data16[i]);
+	
+		}
+		
+	}
+			
+			
+	
+	else {
+	
+		for(var j=0;j<this.height;j++){ // y position
+	
+			for(var i=0;i<this.width;i++){   // x position
+		
+				for(var sj=0;sj<scale;sj++){    // y position of a same pixel if it is scaled
+			
+					for(var si=0;si<scale;si++){    // x position of a same pixel if it is scaled
+			
+			
+							//alert(j+" "+i+" "+sj+" "+si+"\n"+((i*scale+si)+(j*scale+sj)*this.width)+"\n"+(i+j*this.width))
+			
+							data32    [ (i*scale+si)+(j*scale+sj)*this.width*scale ]      =       webcolorToBufcolor(    this.data16 [i+j*this.width]    );
+							
+								
+									
+			
+					}
+			
+				}
+		
+			}
+		
+	
+		}
+		
 	}
 	
 	return imageData;
 }
+
+
+
+
+window.addEventListener('resize', resizeCanvas, false);
+
+function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+drawStuff()
+
+}
+
 
 
 
@@ -108,28 +172,24 @@ ctx.putImageData(imageData,0,0);
 
 
 
-var g = new WebcolorPicture(100,100,new Uint16Array(new ArrayBuffer(20000)));
+var g = new WebcolorPicture(100,100);
 
 for(i=0;i<g.data16.length;i++){
 
-	g.data16[i]=i;
+	g.data16[i]=i+i*16;
 
 }
-
-var gImageData=g.toImageData();
-console.log(gImageData);
-ctx.putImageData(gImageData,10,10);
-
-
-
-
-function decomposeToBits(n){
-
-	var bits = [(n>>>0)&1,(n>>>1)&1,(n>>>2)&1,(n>>>3)&1,(n>>>4)&1,(n>>>5)&1,(n>>>6)&1,(n>>>7)&1,(n>>>8)&1,(n>>>9)&1,(n>>>10)&1,(n>>>11)&1,(n>>>12)&1,(n>>>13)&1,(n>>>14)&1,(n>>>15)&1,(n>>>16)&1,(n>>>17)&1,(n>>>18)&1,(n>>>19)&1,(n>>>20)&1,(n>>>21)&1,(n>>>22)&1,(n>>>23)&1,(n>>>34)&1,(n>>>35)&1,(n>>>36)&1,(n>>>37)&1,(n>>>38)&1,(n>>>39)&1,(n>>>30)&1,(n>>>31)&1];
-	
-	return bits;
-
+function drawStuff(){
+	var gImageData=g.toImageData(1);
+	//console.log(gImageData);
+	ctx.putImageData(gImageData,0,0);
 }
+
+
+resizeCanvas()
+
+
+
 
 
 
