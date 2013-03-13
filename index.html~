@@ -217,9 +217,9 @@ ctx.putImageData(imageData,0,0);
 
 
 
-var g = new WebcolorPicture(500,500);
+var g = new WebcolorPicture(167,500);
 
-var v=100.01;	
+var v=101;	
 
 for(i=0;i<g.data16.length;i++){
 
