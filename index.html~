@@ -126,7 +126,7 @@ WebcolorPicture.prototype.toImageData=function(scale,x,y,w,h){       // TODO Opt
 	var w=w||this.width;
 	var h=h||this.height;
 	
-
+	alert(this.width);
 	var imageData=imageDataCreator.createImageData((w-x)*scale,(h-y)*scale);
 	
 	var data32=new Int32Array(imageData.data.buffer);
@@ -217,7 +217,7 @@ ctx.putImageData(imageData,0,0);
 
 
 
-var g = new WebcolorPicture(167,500);
+var g = new WebcolorPicture(179,255);
 
 var v=101;	
 
@@ -237,6 +237,8 @@ function drawStuff(){
 	var gImageData=g.toImageData(2);
 	//console.log(gImageData);
 	ctx.putImageData(gImageData,0,0);
+	ctx.putImageData(gImageData,318,0);
+	alert(gImageData.width);
 
 }
 
