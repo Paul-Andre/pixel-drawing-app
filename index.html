@@ -2,30 +2,69 @@
 <html>
 <head>
 <title>Pixel Art</title>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="coreUtils.js"></script>
 <script src="colorUtils.js"></script>
 
     <style type="text/css">
-body {  padding: 0; overflow: hidden; }
+body {  padding: 0; margin:0px; overflow: hidden; }
 
-#screen {  position: relative; width: 100%; height: 100%; overflow: hidden;}
+#screen {  position: relative;
+ overflow: hidden;
 
-    	.pageFiller {
-    	margin: 10;
-    		overflow: hidden;
-    	}
+
+image-rendering: optimizeSpeed;
+image-rendering: -moz-crisp-edges;
+image-rendering: -webkit-optimize-contrast;
+-ms-interpolation-mode:nearest-neighbor;
+}
+
+
+
+
+#screenContainer {  position: fixed;
+
+	margin:0px;
+    		padding:0px; 
+ 		overflow: hidden;
+ 		
+	top:0%
+	right:200px;
+	left:200px;
+	
+	height:100%;
+
+}
+
+
+    	
+    	
+    	
+ .sideBar {
+ 
+ 	width:200px;
+ 
+ }
+ 
+ 
     </style>
 
 </head>
 <body>
-<div  style="top:0%; left:0%; position:fixed; width:200px; height:100%; background:red;"></div>
-<div  class="pageFiller">
-<canvas  id="screen" > sorry, looks like your browser doesn't have canvas support </canvas>
-        
-</div>
+<div class="sideBar" style="top:0%; left:0%; position:fixed; height:100%; background:black;"></div>
+<div class="sideBar"  style="top:0%; right:0%; position:fixed; height:100%; background:black;"></div>   
+<div  id="screenContainer">
 
-<div  style="top:0%; right:100%; position:fixed; width:200px; height:100%; background:red;"></div>        
+<canvas  id="screen" > sorry, looks like your browser doesn't have canvas support </canvas> 
+  
+</div>
+     
 <script>
+
+$(".sideBar").css("width",250);
+$("#screenContainer").css("left",250).css("right",250);
+
+
 var webcolorToBufcolor=colorUtils.webcolorToBufcolor;
 var imageDataCreator=document.createElement("canvas").getContext("2d");  // I need to have a context to create imageData objects.
 
@@ -75,20 +114,26 @@ WebcolorPicture.fromTransmission=function(buffer){   //    TODO Find a way to ch
 
 
 
-WebcolorPicture.prototype.toImageData=function(scale){       // TODO Optimize to reuse values for less garbage collection
+WebcolorPicture.prototype.toImageData=function(scale,x,y,w,h){       // TODO Optimize to reuse values for less garbage collection
 																// TODO find a way to use the gpu
 	
 	
 	var scale=scale||1;
 	
+	var x=x||0;
+	var y=y||0;
+	
+	var w=w||this.width;
+	var h=h||this.height;
+	
 
-	var imageData=imageDataCreator.createImageData(this.width*scale,this.height*scale);
+	var imageData=imageDataCreator.createImageData((w-x)*scale,(h-y)*scale);
 	
 	var data32=new Int32Array(imageData.data.buffer);
 	
 	
 	
-	if(scale==1) {
+	if(scale==1 && x==0 && y==0 && w==0 && h==0) {
 	
 		for (var i=0; i<data32.length; i++){   //if 
 		
@@ -102,9 +147,9 @@ WebcolorPicture.prototype.toImageData=function(scale){       // TODO Optimize to
 	
 	else {
 	
-		for(var j=0;j<this.height;j++){ // y position
+		for(var j=y;j<h;j++){ // y position
 	
-			for(var i=0;i<this.width;i++){   // x position
+			for(var i=x;i<w;i++){   // x position
 		
 				for(var sj=0;sj<scale;sj++){    // y position of a same pixel if it is scaled
 			
@@ -138,8 +183,8 @@ WebcolorPicture.prototype.toImageData=function(scale){       // TODO Optimize to
 window.addEventListener('resize', resizeCanvas, false);
 
 function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth-50;
+        canvas.height = window.innerHeight-50;
 
 drawStuff()
 
@@ -172,23 +217,33 @@ ctx.putImageData(imageData,0,0);
 
 
 
-var g = new WebcolorPicture(100,100);
+var g = new WebcolorPicture(167,500);
+
+var v=100.01;	
 
 for(i=0;i<g.data16.length;i++){
 
-	g.data16[i]=i+i*16;
+	g.data16[i]=i*i*v;
+
+
 
 }
+
+
+
 function drawStuff(){
-	var gImageData=g.toImageData(1);
+
+
+	var gImageData=g.toImageData(2);
 	//console.log(gImageData);
 	ctx.putImageData(gImageData,0,0);
+
 }
 
 
-resizeCanvas()
+//resizeCanvas()
 
-
+resizeCanvas();
 
 
 
