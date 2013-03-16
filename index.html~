@@ -111,21 +111,62 @@ var canvas=document.getElementById("screen");
 var ctx=canvas.getContext("2d");
 
 
-function WebcolorPicture(w,h,d16){
+function PixelTile(w,h,d16){
 
 	this.width=w;
 	this.height=h;
-	this.data16=d16||new Uint16Array(new ArrayBuffer(w*h*2))
+
+	this.webcolorData16=d16||(new Uint16Array(new ArrayBuffer(w*h*2)))
+	
+	this.image=document.createElement("canvas");
+	this.image.width=w;
+	this.image.height=h;
+	this.ctx=this.image.getContext("2d");
+	this.imageData=ctx.createImageData(w,h);
+	this.imageData32=new Int32Array(this.imageData.data.buffer);
 	
 	
-	//optimizing stuff
+	this.pixelPutter=this.ctx.createImageData(1,1);
+	this.pixelPutter32=new Int32Array(this.imageData.data.buffer);
 	
-	this.tempCanvas=document.createElement("canvas");
-	this.tempCanvas.width=w;
-	this.tempCanvas.height=h;
-	this.tempCtx=this.tempCanvas.getContext("2d");
+	
+	this.updateImage();
 	
 }
+
+
+PixelTile.prototype.updateImage=function(){
+
+		
+	
+	for (var i=0; i<this.webcolorData16.length; i++){   //if 
+		
+		this.imageData32[i]=webcolorToBufcolor(this.webcolorData16[i]);
+	
+	}
+	
+	this.ctx.putImageData(this.imageData,0,0);
+	
+
+}
+
+
+
+PixelTile.prototype.putSinglePixel=function(x,y,webcolor){
+
+
+	this.webcolorData16[x+y*this.width]=webcolor;
+
+	this.pixelPutter32[0]=webcolorToBufcolor(webcolor);
+	
+	this.ctx.putImageData(this.pixelPutter,x,y);
+
+}
+
+
+
+
+
 
 ////////////////////////////////////
 /*
@@ -137,7 +178,7 @@ data: Uint16[w*h]  (Webcolor)
 
 */
 
-WebcolorPicture.fromTransmission=function(buffer){   //    TODO Find a way to chain extractions.
+PixelTile.fromTransmission=function(buffer){ 
 
 	var dataView=new DataView(buffer);
 	var w= dataView.getUint16(0);
@@ -152,11 +193,13 @@ WebcolorPicture.fromTransmission=function(buffer){   //    TODO Find a way to ch
 	
 	}
 	
-	return new WebcolorPicture(w,h,data16);
+	return new PixelTile(w,h,data16);
 }
 
 
 
+
+function WebcolorPicture(){};
 
 
 WebcolorPicture.prototype.toImageData=function(scale,x,y,w,h){       // TODO Optimize to reuse values for less garbage collection
@@ -261,7 +304,7 @@ window.addEventListener('resize', resizeCanvas, false);
 
 function resizeCanvas() {
         canvas.width = window.innerWidth-50;
-        canvas.height = window.innerHeight-50;
+        canvas.height = window.innerHeight;
 
 drawStuff()
 
@@ -272,35 +315,20 @@ drawStuff()
 
 
 
-var imageData=ctx.createImageData(100,100)
-var data32=new Int32Array(imageData.data.buffer);
-
-
-var color= webcolorToBufcolor(0xf04);
-	
-for (var i=0; i<data32.length;i++){
-
-data32[i]=color;
-
-
-}
-
-ctx.putImageData(imageData,0,0);
 
 
 
 
+var ww=256,hh=256;
+var ss=1;
 
+var g = new PixelTile(ww,hh);
 
+var v=-100;	
 
+for(i=0;i<g.webcolorData16.length;i++){
 
-var g = new WebcolorPicture(256,256);
-
-var v=100;	
-
-for(i=0;i<g.data16.length;i++){
-
-	g.data16[i]=i*i*v
+	g.webcolorData16[i]=(i)*v-9;
 
 
 
@@ -310,12 +338,16 @@ for(i=0;i<g.data16.length;i++){
 
 function drawStuff(){
 
+	setImageSmoothing(ctx,false);
 
-	var gImage=g.toImage(2);
+	g.updateImage();
 	//console.log(gImageData);
-	ctx.drawImage(gImage,0,0);
-
-
+	ctx.drawImage(g.image,0,0);
+	ctx.drawImage(g.image,ww,0);
+	ctx.drawImage(g.image,0,hh);
+	ctx.drawImage(g.image,ww,hh);
+		
+	ctx.drawImage(canvas,0,0,canvas.width*ss,canvas.height*ss);
 }
 
 
