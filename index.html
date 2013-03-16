@@ -68,6 +68,9 @@ $("#screenContainer").css("left",250).css("right",250);
 var webcolorToBufcolor=colorUtils.webcolorToBufcolor;
 var imageDataCreator=document.createElement("canvas").getContext("2d");  // I need to have a context to create imageData objects.
 
+
+var position={x:0,y:0,s:1};
+
 function setImageSmoothing(ctx,state){
 
 	ctx.mozImageSmoothingEnabled=state;
@@ -303,7 +306,7 @@ WebcolorPicture.prototype.toImage=function(scale,x,y,w,h,canvas2,ctx2){
 window.addEventListener('resize', resizeCanvas, false);
 
 function resizeCanvas() {
-        canvas.width = window.innerWidth-50;
+        canvas.width = window.innerWidth-500;
         canvas.height = window.innerHeight;
 
 drawStuff()
@@ -317,47 +320,109 @@ drawStuff()
 
 
 
+var g = new PixelTile(256,256);
 
-
-var ww=128,hh=256;
-var ss=1;
-
-var g = new PixelTile(ww,hh);
-
-var v=-100;	
+var v=100;	
 
 for(i=0;i<g.webcolorData16.length;i++){
 
-	g.webcolorData16[i]=(i)*v-9;
-
-
+	g.webcolorData16[i]=(i*i)*v-20;
 
 }
 
+	g.updateImage();
 
 
 function drawStuff(){
 
+	
+	ctx.clearRect(0,0,canvas.width,canvas.height)
+
 	setImageSmoothing(ctx,false);
 
 	g.updateImage();
-	//console.log(gImageData);
-	ctx.drawImage(g.image,0,0);
-	ctx.drawImage(g.image,ww,0);
-	ctx.drawImage(g.image,0,hh);
-	ctx.drawImage(g.image,ww,hh);
 		
-	ctx.drawImage(canvas,0,0,canvas.width*ss,canvas.height*ss);
+	ctx.drawImage(g.image,    position.x  ,    position.y ,    g.width*position.s  ,   g.height*position.s);
+	
 }
+
+
 
 
 //resizeCanvas()
 
 resizeCanvas();
 
+position.x=canvas.width*0.5-g.width*0.5*position.s;
+position.y=canvas.height*0.5-g.height*0.5*position.s;
 
+drawStuff();
 
+function cancelEvent(e)
+{
+  e = e ? e : window.event;
+  if(e.stopPropagation)
+    e.stopPropagation();
+  if(e.preventDefault)
+    e.preventDefault();
+  e.cancelBubble = true;
+  e.cancel = true;
+  e.returnValue = false;
+  return false;
+}
 
+function onMouseWheel(evt){
+	var wheelData = evt.detail ? evt.detail/-3 : evt.wheelDelta / 120;
+	
+	var tile=g;
+				
+	var x, y;
+		
+	if(evt.offsetX) {
+		x = evt.offsetX;
+		y = evt.offsetY;
+	}
+	else if(evt.layerX) {
+		x = evt.layerX;
+		y = evt.layerY;
+	}
+	
+	x=Math.max(position.x,Math.min(position.x+tile.width*position.s,x));
+	y=Math.max(position.y,Math.min(position.y+tile.height*position.s,y));	
+	
+	newS=Math.max(position.s+wheelData,1);	
+		
+	position.x=x-(x-position.x)*newS/position.s;
+	position.y=y-(y-position.y)*newS/position.s;
+	
+	position.x=Math.min(canvas.width*0.5,position.x);
+	position.y=Math.min(canvas.height*0.5,position.y);
+	
+	position.x=Math.max(canvas.width*0.5-tile.width*newS,position.x);
+	position.y=Math.max(canvas.height*0.5-tile.height*newS,position.y);		
+	
+	position.s=newS
+	
+	if(position.s<=2){
+	
+		position.x=canvas.width*0.5-tile.width*newS*0.5;
+		position.y=canvas.height*0.5-tile.height*newS*0.5;
+			
+	}
+
+	drawStuff();
+			
+	return cancelEvent(evt);
+				
+}
+
+canvas.addEventListener("mousewheel",onMouseWheel
+, false);
+
+canvas.addEventListener("DOMMouseScroll",onMouseWheel
+, false);
+
+//canvas.addEventListener("")
 
 </script>
 
