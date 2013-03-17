@@ -5,6 +5,7 @@
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="coreUtils.js"></script>
 <script src="colorUtils.js"></script>
+<script src="BrowserDetect.js"></script>
 
     <style type="text/css">
 body {  padding: 0; margin:0px; overflow: hidden; }
@@ -489,8 +490,11 @@ function onMouseMove(evt){
 	
 		position.x=initialTilePositionX+(x-initialMiddleMouseButtonX);
 		position.y=initialTilePositionY+(y-initialMiddleMouseButtonY);
-		requestRedraw();
-		//drawStuff();
+		
+		if(BrowserDetect.browser=="Firefox"){requestRedraw();}
+		else{
+			drawStuff();
+		}
 	}
 	
 }
