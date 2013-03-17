@@ -33,7 +33,7 @@ image-rendering: -webkit-optimize-contrast;
 	left:200px;
 	
 	height:100%;
-
+	
 }
 
 
@@ -403,7 +403,7 @@ function onMouseWheel(evt){
 	
 	position.s=newS
 	
-	if(position.s==1){
+	if(position.s<=2){
 	
 		position.x=canvas.width*0.5-tile.width*newS*0.5;
 		position.y=canvas.height*0.5-tile.height*newS*0.5;
@@ -416,11 +416,96 @@ function onMouseWheel(evt){
 				
 }
 
+function onKeyDown(evt){
+	if (evt.keyCode == 37 || evt.keyCode == 65) {position.x-=5;}
+	if (evt.keyCode == 39 || evt.keyCode == 68) {position.x+=5;}
+	if (evt.keyCode == 38 || evt.keyCode == 87) {position.y-=5;}
+	if (evt.keyCode == 40 || evt.keyCode == 83) {position.y+=5;}
+	drawStuff();
+}
+
+
+var mouse={1:false,2:false,3:false};
+var initialMiddleMouseButtonX=0,initialMiddleMouseButtonY=0;
+var initialTilePositionX=0,initialTilePositionY=0;
+
+function onMouseDown(evt){
+
+	var x, y;
+		
+	if(evt.offsetX) {
+		x = evt.offsetX;
+		y = evt.offsetY;
+	}
+	else if(evt.layerX) {
+		x = evt.layerX;
+		y = evt.layerY;
+	}
+
+	mouse[evt.which]=true;
+	
+	if(evt.which==2){
+		initialMiddleMouseButtonX=x;
+		initialMiddleMouseButtonY=y;
+		initialTilePositionX=position.x;
+		initialTilePositionY=position.y;
+	}
+}
+
+function onMouseUp(evt){
+
+	mouse[evt.which]=false;
+	
+	
+}
+
+function onMouseMove(evt){
+
+	var x, y;
+		
+	if(evt.offsetX) {
+		x = evt.offsetX;
+		y = evt.offsetY;
+	}
+	else if(evt.layerX) {
+		x = evt.layerX;
+		y = evt.layerY;
+	}
+	
+	if(mouse[2]){
+	
+		position.x=initialTilePositionX+(x-initialMiddleMouseButtonX);
+		position.y=initialTilePositionY+(y-initialMiddleMouseButtonY);
+		requestRedraw();
+		//drawStuff();
+	}
+	
+}
+
+
+
+var requestedRedraw=false;
+function requestRedraw(){
+
+	if(!requestedRedraw){
+		requestAnimationFrame(function(){drawStuff();requestedRedraw=false});
+	}
+
+}
+
 canvas.addEventListener("mousewheel",onMouseWheel
 , false);
 
 canvas.addEventListener("DOMMouseScroll",onMouseWheel
 , false);
+
+
+window.addEventListener('keydown',onKeyDown,false);
+
+window.addEventListener('mousedown',onMouseDown,false);
+window.addEventListener('mouseup',onMouseUp,false);
+window.addEventListener('mousemove',onMouseMove,false);
+
 
 //canvas.addEventListener("")
 
