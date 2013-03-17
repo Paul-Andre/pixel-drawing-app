@@ -431,11 +431,11 @@ function onMouseWheel(evt){
 }
 
 function onKeyDown(evt){
-	if (evt.keyCode == 37 || evt.keyCode == 65) {position.x-=5;}
-	if (evt.keyCode == 39 || evt.keyCode == 68) {position.x+=5;}
-	if (evt.keyCode == 38 || evt.keyCode == 87) {position.y-=5;}
-	if (evt.keyCode == 40 || evt.keyCode == 83) {position.y+=5;}
-	drawStuff();
+	if (evt.keyCode == 37 || evt.keyCode == 65) {position.x-=10;} //left
+	if (evt.keyCode == 39 || evt.keyCode == 68) {position.x+=10;} //right
+	if (evt.keyCode == 38 || evt.keyCode == 87) {position.y-=10;} //up
+	if (evt.keyCode == 40 || evt.keyCode == 83) {position.y+=10;} //down
+	requestRedraw();
 }
 
 
@@ -491,9 +491,9 @@ function onMouseMove(evt){
 		position.x=initialTilePositionX+(x-initialMiddleMouseButtonX);
 		position.y=initialTilePositionY+(y-initialMiddleMouseButtonY);
 		
-		if(BrowserDetect.browser=="Chrome"||BrowserDetect.browser=="Opera"){drawStuff()}
+		if(BrowserDetect.browser=="Firefox"){requestRedraw();}
 		else{
-			requestRedraw();
+			drawStuff();
 		}
 	}
 	

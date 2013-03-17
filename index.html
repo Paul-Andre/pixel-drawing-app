@@ -431,11 +431,11 @@ function onMouseWheel(evt){
 }
 
 function onKeyDown(evt){
-	if (evt.keyCode == 37 || evt.keyCode == 65) {position.x-=5;}
-	if (evt.keyCode == 39 || evt.keyCode == 68) {position.x+=5;}
-	if (evt.keyCode == 38 || evt.keyCode == 87) {position.y-=5;}
-	if (evt.keyCode == 40 || evt.keyCode == 83) {position.y+=5;}
-	drawStuff();
+	if (evt.keyCode == 37 || evt.keyCode == 65) {position.x-=10;} //left
+	if (evt.keyCode == 39 || evt.keyCode == 68) {position.x+=10;} //right
+	if (evt.keyCode == 38 || evt.keyCode == 87) {position.y-=10;} //up
+	if (evt.keyCode == 40 || evt.keyCode == 83) {position.y+=10;} //down
+	requestRedraw();
 }
 
 
@@ -463,6 +463,12 @@ function onMouseDown(evt){
 		initialMiddleMouseButtonY=y;
 		initialTilePositionX=position.x;
 		initialTilePositionY=position.y;
+	}
+	
+	if(evt.which==2){
+		
+		
+		
 	}
 }
 
