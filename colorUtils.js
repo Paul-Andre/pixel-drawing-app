@@ -90,16 +90,14 @@ function webcolorToCsscolor(n){
 			byte|=bits[i*4+0];
 			byte|=bits[i*4+1]<<1;
 			byte|=bits[i*4+2]<<2;
-			byte|=bits[i*4+3]<<3;		
-			byte|=bits[i*4+0]<<4;
-			byte|=bits[i*4+1]<<5;	
-			byte|=bits[i*4+2]<<6;
-			byte|=bits[i*4+3]<<7;		
+			byte|=bits[i*4+3]<<3;	
 		
 		
 			bytes[i]=byte;	
 		
 		}
+		
+		bytes.reverse(); // turn rgb into bgr
 		
 		return "#"+bytes[0].toString(16)+bytes[0].toString(16)+bytes[1].toString(16)+bytes[1].toString(16)+bytes[2].toString(16)+bytes[2].toString(16);
 

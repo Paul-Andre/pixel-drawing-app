@@ -13,10 +13,12 @@
     <style type="text/css">
 body {  padding: 0; margin:0px; overflow: hidden; }
 
-#screen {  position: relative;
+.mainCanvas {  position: relative;
  overflow: hidden;
 
-
+	top:0px;
+	
+	left:0px;
 image-rendering: optimizeSpeed;
 image-rendering: -moz-crisp-edges;
 image-rendering: -webkit-optimize-contrast;
@@ -59,7 +61,7 @@ margin-top:5px;margin-bottom:5px;
 position: relative;
 
 border-radius: 5px;
-
+border-style:inset;
 
 }
  
@@ -76,6 +78,18 @@ border-radius: 15px;
  
  }
  
+ 
+ canvas.mainCanvas {
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ }
     </style>
 
 </head>
@@ -83,7 +97,7 @@ border-radius: 15px;
 <div class="sideBar" style="top:0%; left:0%; position:fixed; height:100%; background:black;"></div>
 <div class="sideBar"  style="top:0%; right:0%; position:fixed; height:100%; background:black;">
 <div id="colorDisplayer"></div>
-<button class="colorChoice" id="pinkButton" style="background-color:#ff4455 "></button> <button class="colorChoice" id="blackButton" style="background-color:black"></button>
+<button class="colorChoice" id="pinkButton" style="background-color:#ff4455 "></button> <button class="colorChoice" id="blackButton" style="background-color:#122"></button>
 
 </div>   
 <div  id="screenContainer">
@@ -114,16 +128,18 @@ border-radius: 15px;
 
 var initialPink=0xf45;
 
+var currentColor=0x122;
+
 $(".sideBar").css("width",250);
 $("#screenContainer").css("left",250).css("right",250);
 $("#pinkButton")
 		.click(function(){
-			currentColor=initialPink
+			currentColor=initialPink;
 			updateDisplayer();
 		});
 $("#blackButton")
 		.click(function(){
-			currentColor=0
+			currentColor=0x122;
 			updateDisplayer();
 		});
 
@@ -131,11 +147,11 @@ var colorDisplayer=$("#colorDisplayer");
 
 function updateDisplayer(){
 
-	colorDisplayer.css("backgroud-color", colorUtils.webcolorToCsscolor(currentColor))
+	colorDisplayer.css("background-color", colorUtils.webcolorToCsscolor(currentColor)    )
 
 }
 
-
+	updateDisplayer();
 var mainCanvases=$(".mainCanvas");
 
 var webcolorToBufcolor=colorUtils.webcolorToBufcolor;
@@ -434,7 +450,6 @@ function drawStuff(){
 
 
 
-var currentColor=0;
 
 
 
@@ -519,6 +534,9 @@ function onKeyDown(evt){
 var lastX=0, lastY=0;
 function draw(x,y,dragging){
 
+	if(x>=canvas.width||x<0){mouse[1]=false;return false;}
+	if(y>=canvas.height||y<0){mouse[1]=false;return false;}
+
 	var x=Math.floor((x-position.x)/position.s);
 	var y=Math.floor((y-position.y)/position.s);
 	
@@ -585,6 +603,7 @@ function selectColorFromTile(x,y){
 	if(y>=tile.height||y<0){return false;}
 	
 	currentColor=tile.webcolorData16[x+y*tile.width];
+	updateDisplayer();
 	
 }
 
@@ -664,7 +683,7 @@ function onMouseMove(evt){
 	return	cancelEvent(evt);
 }
 
-function onMouseLeave(){
+function onMouseLeave(evt){
 
 	mouse[1]=false;
 	mouse[2]=false;
@@ -691,10 +710,11 @@ canvas.addEventListener("DOMMouseScroll",onMouseWheel
 
 window.addEventListener('keydown',onKeyDown,false);
 
-window.addEventListener('mousedown',onMouseDown,false);
-window.addEventListener('mouseup',onMouseUp,false);
-window.addEventListener('mousemove',onMouseMove,false);
-window.addEventListener('mouseleave',onMouseLeave,false);
+canvas.addEventListener('mousedown',onMouseDown,false);
+canvas.addEventListener('mouseup',onMouseUp,false);
+canvas.addEventListener('mousemove',onMouseMove,false);
+canvas.addEventListener('mouseleave',onMouseLeave,false);
+canvas.addEventListener ("mouseout", onMouseLeave, false);
 canvas.addEventListener('contextmenu', function(e){return cancelEvent(e);},false);
 
 //canvas.addEventListener("")
