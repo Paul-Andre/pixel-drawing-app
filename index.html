@@ -1,8 +1,11 @@
 <!doctype html>
 <html>
 <head>
+	<meta charset="UTF-8">
 <title>Pixel Art</title>
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+
 <script src="coreUtils.js"></script>
 <script src="colorUtils.js"></script>
 <script src="BrowserDetect.js"></script>
@@ -44,21 +47,56 @@ image-rendering: -webkit-optimize-contrast;
  .sideBar {
  
  	width:200px;
- 
  }
  
+#colorDisplayer {
+
+ width:200px;
+ height:200px;
+ display: block;
+margin-left: auto;   margin-right: auto;
+margin-top:5px;margin-bottom:5px;
+position: relative;
+
+border-radius: 5px;
+
+
+}
+ 
+ button.colorChoice {
+ 
+ width:50px;
+ height:50px;
+ display: block;
+margin-left: auto;   margin-right: auto;
+margin-top:5px;margin-bottom:5px;
+position: relative;
+
+border-radius: 15px;
+ 
+ }
  
     </style>
 
 </head>
 <body>
 <div class="sideBar" style="top:0%; left:0%; position:fixed; height:100%; background:black;"></div>
-<div class="sideBar"  style="top:0%; right:0%; position:fixed; height:100%; background:black;"></div>   
+<div class="sideBar"  style="top:0%; right:0%; position:fixed; height:100%; background:black;">
+<div id="colorDisplayer"></div>
+<button class="colorChoice" id="pinkButton" style="background-color:#ff4455 "></button> <button class="colorChoice" id="blackButton" style="background-color:black"></button>
+
+</div>   
 <div  id="screenContainer">
 
-<canvas  id="screen" > sorry, looks like your browser doesn't have canvas support </canvas> 
-  
+<canvas  id="screen" class="mainCanvas" > sorry, looks like your browser doesn't have canvas support </canvas> 
+<canvas  id="overlay" class="mainCanvas" > </canvas> 
 </div>
+     
+     
+     
+     
+     
+     
      
 <script>
 
@@ -74,10 +112,31 @@ image-rendering: -webkit-optimize-contrast;
     })();
 	
 
+var initialPink=0xf45;
 
 $(".sideBar").css("width",250);
 $("#screenContainer").css("left",250).css("right",250);
+$("#pinkButton")
+		.click(function(){
+			currentColor=initialPink
+			updateDisplayer();
+		});
+$("#blackButton")
+		.click(function(){
+			currentColor=0
+			updateDisplayer();
+		});
 
+var colorDisplayer=$("#colorDisplayer");
+
+function updateDisplayer(){
+
+	colorDisplayer.css("backgroud-color", colorUtils.webcolorToCsscolor(currentColor))
+
+}
+
+
+var mainCanvases=$(".mainCanvas");
 
 var webcolorToBufcolor=colorUtils.webcolorToBufcolor;
 var imageDataCreator=document.createElement("canvas").getContext("2d");  // I need to have a context to create imageData objects.
@@ -127,6 +186,7 @@ if(!CRISP_SCALABLE){alert("Your browser doesn't support crisp scaling in canvas.
 var canvas=document.getElementById("screen");
 var ctx=canvas.getContext("2d");
 
+var canvas=document.getElementById("screen");
 
 function PixelTile(w,h,d16){
 
@@ -170,6 +230,7 @@ PixelTile.prototype.updateImage=function(){
 
 
 PixelTile.prototype.putSinglePixel=function(x,y,webcolor){
+
 
 
 	this.webcolorData16[x+y*this.width]=webcolor;
@@ -321,10 +382,16 @@ WebcolorPicture.prototype.toImage=function(scale,x,y,w,h,canvas2,ctx2){
 window.addEventListener('resize', resizeCanvas, false);
 
 function resizeCanvas() {
-        canvas.width = window.innerWidth-500;
-        canvas.height = window.innerHeight;
 
-drawStuff()
+
+		for(var i=0;i<mainCanvases.length;i++){
+				
+				mainCanvases[i].width=window.innerWidth-500;
+				mainCanvases[i].height=window.innerHeight;	
+					
+		}		
+		
+		drawStuff()
 
 }
 
@@ -335,13 +402,17 @@ drawStuff()
 
 
 
-var g = new PixelTile(256,256);
+var tile = new PixelTile(256,256);
+
+var g=tile;
 
 var v=100;	
 
+
+
 for(i=0;i<g.webcolorData16.length;i++){
 
-	g.webcolorData16[i]=(i*i)*v-20;
+	g.webcolorData16[i]=initialPink;
 
 }
 
@@ -361,6 +432,9 @@ function drawStuff(){
 	
 }
 
+
+
+var currentColor=0;
 
 
 
@@ -440,16 +514,17 @@ function onKeyDown(evt){
 	if (evt.keyCode == 38 || evt.keyCode == 87) {position.y-=10;} //up
 	if (evt.keyCode == 40 || evt.keyCode == 83) {position.y+=10;} //down
 	requestRedraw();
+	return cancelEvent(evt);
 }
 
 var lastX=0, lastY=0;
 function draw(x,y,dragging){
-	var tile=g;	
+
 	var x=Math.floor((x-position.x)/position.s);
 	var y=Math.floor((y-position.y)/position.s);
 	
-	if(x>tile.width)return false;
-	if(y>tile.height)return false;
+	if(x>=tile.width||x<0){mouse[1]=false;return false;}
+	if(y>=tile.height||y<0){mouse[1]=false;return false;}
 	
 
     if (dragging){
@@ -463,8 +538,8 @@ function draw(x,y,dragging){
     var sx = (x1 < x2) ? 1 : -1;
     var sy = (y1 < y2) ? 1 : -1;
     var err = dx - dy;
-    // Set first coordinates
-  //  tile.putSinglePixel(y1, x1,0);
+   		// Set first coordinates
+  		//  tile.putSinglePixel(y1, x1,0);
     // Main loop
     while (!((x1 == x2) && (y1 == y2))) {
       var e2 = err << 1;
@@ -477,16 +552,16 @@ function draw(x,y,dragging){
         y1 += sy;
       }
       // Set coordinates
-    tile.putSinglePixel(x1, y1,0);
+    tile.putSinglePixel(x1, y1,currentColor);
     }
     
-    //http://stackoverflow.com/questions/4672279/bresenham-algorithm-in-javascript
+    // http://stackoverflow.com/questions/4672279/bresenham-algorithm-in-javascript
     
 
 	}else{
 	
 	
-	    tile.putSinglePixel(x, y,0);
+	    tile.putSinglePixel(x, y,currentColor);
 	
 	}
 	
@@ -502,6 +577,17 @@ function draw(x,y,dragging){
 	return true;
 }
 
+function selectColorFromTile(x,y){
+
+	var x=Math.floor((x-position.x)/position.s);
+	var y=Math.floor((y-position.y)/position.s);
+	
+	if(x>=tile.width||x<0){return false;}
+	if(y>=tile.height||y<0){return false;}
+	
+	currentColor=tile.webcolorData16[x+y*tile.width];
+	
+}
 
 var mouse={1:false,2:false,3:false};
 var initialMiddleMouseButtonX=0,initialMiddleMouseButtonY=0;
@@ -532,14 +618,21 @@ function onMouseDown(evt){
 	if(evt.which==1){
 		
 		draw(x,y);
-		
+		drawing=true;
 	}
+	
+	if(evt.which==3){
+		
+		selectColorFromTile(x,y);
+	}
+	
+	return	cancelEvent(evt);
 }
 
 function onMouseUp(evt){
 
 	mouse[evt.which]=false;
-	
+	return	cancelEvent(evt);
 	
 }
 
@@ -569,9 +662,17 @@ function onMouseMove(evt){
 	if(mouse[1]){
 		draw(x,y,true)
 	}
+	return	cancelEvent(evt);
 }
 
+function onMouseLeave(){
 
+	mouse[1]=false;
+	mouse[2]=false;
+	mouse[3]=false;
+	
+	return	cancelEvent(evt);
+}
 
 var requestedRedraw=false;
 function requestRedraw(){
@@ -594,7 +695,8 @@ window.addEventListener('keydown',onKeyDown,false);
 window.addEventListener('mousedown',onMouseDown,false);
 window.addEventListener('mouseup',onMouseUp,false);
 window.addEventListener('mousemove',onMouseMove,false);
-
+window.addEventListener('mouseleave',onMouseLeave,false);
+canvas.addEventListener('contextmenu', function(e){return cancelEvent(e);},false);
 
 //canvas.addEventListener("")
 
