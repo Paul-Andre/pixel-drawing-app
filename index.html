@@ -426,7 +426,7 @@ function resizeCanvas() {
 
 
 
-var tile = new PixelTile(256,256);
+var tile = new PixelTile(256/2,256/2);
 
 var g=tile;
 
@@ -694,7 +694,7 @@ function onMouseMove(evt){
 function onMouseLeave(evt){
 
 	mouse[1]=false;
-	mouse[2]=false;
+	//mouse[2]=false;
 	mouse[3]=false;
 	
 	return	cancelEvent(evt);

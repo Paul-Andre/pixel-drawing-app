@@ -100,7 +100,7 @@ border-radius: 15px;
 <div id="colorDisplayer"></div>
 </button> <button class="colorChoice" id="blackButton" style="background-color:#122">
 </button><button class="colorChoice" id="pinkButton" style="background-color:#ff4455 ">
-</button><button class="colorChoice" id="blueButton" style="background-color:#66e ">
+</button><button class="colorChoice" id="blueButton" style="background-color:#5fa ">
 
 </div>   
 <div  id="screenContainer">
@@ -147,7 +147,7 @@ $("#blackButton")
 		});
 $("#blueButton")
 		.click(function(){
-			currentColor=0x66e;
+			currentColor=0x5fa;
 			updateDisplayer();
 		});
 
@@ -694,7 +694,7 @@ function onMouseMove(evt){
 function onMouseLeave(evt){
 
 	mouse[1]=false;
-	mouse[2]=false;
+	//mouse[2]=false;
 	mouse[3]=false;
 	
 	return	cancelEvent(evt);
