@@ -210,7 +210,6 @@ if(!CRISP_SCALABLE){alert("Your browser doesn't support crisp scaling in canvas.
 var canvas=document.getElementById("screen");
 var ctx=canvas.getContext("2d");
 
-var canvas=document.getElementById("screen");
 
 function PixelTile(w,h,d16){
 
@@ -228,10 +227,12 @@ function PixelTile(w,h,d16){
 	
 	
 	this.pixelPutter=this.ctx.createImageData(1,1);
-	this.pixelPutter32=new Int32Array(this.imageData.data.buffer);
+	this.pixelPutter32=new Int32Array(this.pixelPutter.data.buffer);
 	
 	
 	this.updateImage();
+	
+	this.t=this;
 	
 }
 
@@ -260,8 +261,10 @@ PixelTile.prototype.putSinglePixel=function(x,y,webcolor){
 	this.webcolorData16[x+y*this.width]=webcolor;
 
 	this.pixelPutter32[0]=webcolorToBufcolor(webcolor);
-	
+	//alert(webcolor);
 	this.ctx.putImageData(this.pixelPutter,x,y);
+	
+	//console.log(this.t);
 
 }
 
@@ -426,7 +429,7 @@ function resizeCanvas() {
 
 
 
-var tile = new PixelTile(256,256);
+var tile = new PixelTile(256/2,256/2);
 
 var g=tile;
 
@@ -450,7 +453,7 @@ function drawStuff(){
 
 	setImageSmoothing(ctx,false);
 
-	g.updateImage();
+	//g.updateImage();
 		
 	ctx.drawImage(g.image,    position.x  ,    position.y ,    g.width*position.s  ,   g.height*position.s);
 	
