@@ -129,10 +129,18 @@ border-radius: 15px;
     })();
 	
 
+
+
+//color defs
 var initialPink=0xf45;
 
+
+//currentColor
 var currentColor=0x122;
 
+
+
+//jQuery commands for ui
 $(".sideBar").css("width",250);
 $("#screenContainer").css("left",250).css("right",250);
 $("#pinkButton")
@@ -153,6 +161,7 @@ $("#blueButton")
 
 var colorDisplayer=$("#colorDisplayer");
 
+
 function updateDisplayer(){
 
 	colorDisplayer.css("background-color", colorUtils.webcolorToCsscolor(currentColor)    )
@@ -160,13 +169,36 @@ function updateDisplayer(){
 }
 
 	updateDisplayer();
+	
+
+
+
+
+
+
+
+//get all the canvases. 	
+	
+	
 var mainCanvases=$(".mainCanvas");
 
+//defining global objects and functions
+
 var webcolorToBufcolor=colorUtils.webcolorToBufcolor;
+
+
 var imageDataCreator=document.createElement("canvas").getContext("2d");  // I need to have a context to create imageData objects.
 
 
 var position={x:0,y:0,s:1};
+
+
+var mouse={1:false,2:false,3:false};
+
+
+
+
+//functions for setting and testing crip scaling
 
 function setImageSmoothing(ctx,state){
 
@@ -207,9 +239,17 @@ function testCrispScaling(){
 var CRISP_SCALABLE = testCrispScaling();
 if(!CRISP_SCALABLE){alert("Your browser doesn't support crisp scaling in canvas.\n\nSorry, but things are going to look blurry.")};
 
+
+
+
 var canvas=document.getElementById("screen");
 var ctx=canvas.getContext("2d");
 
+
+
+
+
+//  PixelTile class ///////////////////////////////////////////
 
 function PixelTile(w,h,d16){
 
@@ -236,8 +276,7 @@ function PixelTile(w,h,d16){
 	
 }
 
-
-PixelTile.prototype.updateImage=function(){
+PixelTile.prototype.updateImage=function(){   // deprecated ...
 
 		
 	
@@ -251,8 +290,6 @@ PixelTile.prototype.updateImage=function(){
 	
 
 }
-
-
 
 PixelTile.prototype.putSinglePixel=function(x,y,webcolor){
 
@@ -273,137 +310,9 @@ PixelTile.prototype.putSinglePixel=function(x,y,webcolor){
 
 
 
-////////////////////////////////////
-/*
-WebcolorPicture Transmission Format:
-
-w: Uint16
-h: Uint16
-data: Uint16[w*h]  (Webcolor)
-
-*/
-
-PixelTile.fromTransmission=function(buffer){ 
-
-	var dataView=new DataView(buffer);
-	var w= dataView.getUint16(0);
-	var h= dataView.getUint16(1);
-	
-	var data=new ArrayBuffer(w*h*2);
-	var data16=new Uint16Array(data);
-	
-	for(var i=0; i<w*h*2; i++){
-	
-		data16[i]=dataView.getUint16(i);
-	
-	}
-	
-	return new PixelTile(w,h,data16);
-}
 
 
-
-
-function WebcolorPicture(){};
-
-
-WebcolorPicture.prototype.toImageData=function(scale,x,y,w,h){       // TODO Optimize to reuse values for less garbage collection
-																// TODO find a way to use the gpu
-	
-	
-	var scale=scale||1;
-	
-	var x=x||0;
-	var y=y||0;
-	
-	var w=w||this.width;
-	var h=h||this.height;
-	
-	var imageData=imageDataCreator.createImageData((w-x)*scale,(h-y)*scale);
-	
-	var data32=new Int32Array(imageData.data.buffer);
-	
-	
-	
-	if(scale==1 && x==0 && y==0 && w==0 && h==0) {
-	
-		for (var i=0; i<data32.length; i++){   //if 
-		
-			data32[i]=webcolorToBufcolor(this.data16[i]);
-	
-		}
-		
-	}
-			
-			
-	
-	else {
-	
-		for(var j=y;j<h;j++){ // y position
-	
-			for(var i=x;i<w;i++){   // x position
-		
-				for(var sj=0;sj<scale;sj++){    // y position of a same pixel if it is scaled
-			
-					for(var si=0;si<scale;si++){    // x position of a same pixel if it is scaled
-			
-			
-							//alert(j+" "+i+" "+sj+" "+si+"\n"+((i*scale+si)+(j*scale+sj)*this.width)+"\n"+(i+j*this.width))
-			
-							data32    [ (i*scale+si)+(j*scale+sj)*this.width*scale ]      =       webcolorToBufcolor(    this.data16 [i+j*this.width]    );
-							
-								
-									
-			
-					}
-			
-				}
-		
-			}
-		
-	
-		}
-		
-	}
-	
-	return imageData;
-}
-
-
-
-WebcolorPicture.prototype.toImage=function(scale,x,y,w,h,canvas2,ctx2){ 
-
-		
-	var scale=scale||1;
-	
-	var x=x||0;
-	var y=y||0;
-	
-	var w=w||this.width;
-	var h=h||this.height;
-	
-	var canvas=canvas2||document.createElement("canvas");
-	var ctx= ctx2||canvas.getContext("2d");
-
-	if (CRISP_SCALABLE){
-
-		var data=this.toImageData(1,x,y,w,h);
-		this.tempCanvas.width=w;
-		this.tempCanvas.height=h;
-		this.tempCtx.putImageData(data,0,0);
-		setImageSmoothing(ctx,false);
-		ctx.drawImage(this.tempCanvas,0,0,w*scale,h*scale);
-		
-	}
-	else {
-	
-		var data=this.toImageData(scale,x,y,w,h);
-		ctx.putImageData(data);
-	}
-	
-	return canvas;
-}
-
+// Code to resize the canvas when the screen is resized
 
 
 window.addEventListener('resize', resizeCanvas, false);
@@ -419,7 +328,6 @@ function resizeCanvas() {
 		}		
 		
 		drawStuff()
-
 }
 
 
@@ -427,55 +335,53 @@ function resizeCanvas() {
 
 
 
-
+// Code that actually makes the tile and draws it
 
 var tile = new PixelTile(256*2,256*2);
 
-var g=tile;
 
-var v=100;	
+for(i=0;i<tile.webcolorData16.length;i++){  //filling the screen with pink
 
-
-
-for(i=0;i<g.webcolorData16.length;i++){
-
-	g.webcolorData16[i]=initialPink;
+	tile.webcolorData16[i]=initialPink;
 
 }
+tile.updateImage();
 
-	g.updateImage();
 
 
 function drawStuff(){
 
-	
 	ctx.clearRect(0,0,canvas.width,canvas.height)
 
 	setImageSmoothing(ctx,false);
-
-	//g.updateImage();
 		
-	ctx.drawImage(g.image,    position.x  ,    position.y ,    g.width*position.s  ,   g.height*position.s);
+	ctx.drawImage(tile.image,    position.x  ,    position.y ,    tile.width*position.s  ,   tile.height*position.s);
 	
 }
 
-
-
-
-
-
-//resizeCanvas()
-
 resizeCanvas();
-
-position.x=canvas.width*0.5-g.width*0.5*position.s;
-position.y=canvas.height*0.5-g.height*0.5*position.s;
+//placing the tile in the center
+position.x=canvas.width*0.5-tile.width*0.5*position.s;
+position.y=canvas.height*0.5-tile.height*0.5*position.s;
 
 drawStuff();
 
-function cancelEvent(e)
+
+
+
+
+
+
+
+
+
+
+
+// canvas specific event listeners.
+
+function cancelEvent(e)   //used to cancel all default behavior for events. Contains lots of "platform targetting" stuff. I should probably redo this.
 {
-  e = e ? e : window.event;
+  //e = e ? e : window.event;
   if(e.stopPropagation)
     e.stopPropagation();
   if(e.preventDefault)
@@ -487,9 +393,7 @@ function cancelEvent(e)
 }
 
 function onMouseWheel(evt){
-	var wheelData = evt.detail ? evt.detail/-3 : evt.wheelDelta / 120;
-	
-	var tile=g;
+	var wheelData = evt.detail ? evt.detail/-3 : evt.wheelDelta / 120;  // normalizing wheel data.
 				
 	var x, y;
 		
@@ -521,12 +425,12 @@ function onMouseWheel(evt){
 	position.x=position.x|0;
 	position.y=position.y|0;
 	
-	if(position.s<=2){
+	/*if(position.s<=2){
 	
 		position.x=canvas.width*0.5-tile.width*newS*0.5;
 		position.y=canvas.height*0.5-tile.height*newS*0.5;
 			
-	}
+	}*/
 
 	drawStuff();
 			
@@ -592,12 +496,7 @@ function draw(x,y,dragging){
 	    tile.putSinglePixel(x, y,currentColor);
 	
 	}
-	
-	
-	
-	
-	
-	
+
 	lastX=x;
 	lastY=y;
 	requestRedraw();
@@ -618,7 +517,6 @@ function selectColorFromTile(x,y){
 	
 }
 
-var mouse={1:false,2:false,3:false};
 var initialMiddleMouseButtonX=0,initialMiddleMouseButtonY=0;
 var initialTilePositionX=0,initialTilePositionY=0;
 
@@ -683,10 +581,13 @@ function onMouseMove(evt){
 		position.x=initialTilePositionX+(x-initialMiddleMouseButtonX);
 		position.y=initialTilePositionY+(y-initialMiddleMouseButtonY);
 		
-		if(BrowserDetect.browser=="Firefox"){requestRedraw();}
+		/*if(BrowserDetect.browser=="Firefox"){requestRedraw();}
 		else{
 			drawStuff();
-		}
+		}*/
+		
+		
+		requestRedraw();
 	}
 	if(mouse[1]){
 		draw(x,y,true)
@@ -711,6 +612,11 @@ function requestRedraw(){
 	}
 
 }
+
+
+
+// addEventListeners /////
+
 
 canvas.addEventListener("mousewheel",onMouseWheel
 , false);
