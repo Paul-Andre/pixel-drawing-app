@@ -251,12 +251,12 @@ var ctx=canvas.getContext("2d");
 
 //  PixelTile class ///////////////////////////////////////////
 
-function PixelTile(w,h,d16){
+function PixelTile(w,h){
 
 	this.width=w;
 	this.height=h;
 
-	this.webcolorData16=d16||(new Uint16Array(new ArrayBuffer(w*h*2)))
+	//this.webcolorData16=d16||(new Uint16Array(new ArrayBuffer(w*h*2)))
 	
 	this.image=document.createElement("canvas");
 	this.image.width=w;
@@ -270,13 +270,13 @@ function PixelTile(w,h,d16){
 	this.pixelPutter32=new Int32Array(this.pixelPutter.data.buffer);
 	
 	
-	this.updateImage();
+	//this.updateImage();
 	
 	this.t=this;
 	
 }
 
-PixelTile.prototype.updateImage=function(){   // deprecated ...
+/*PixelTile.prototype.updateImage=function(){   // deprecated ...
 
 		
 	
@@ -289,13 +289,13 @@ PixelTile.prototype.updateImage=function(){   // deprecated ...
 	this.ctx.putImageData(this.imageData,0,0);
 	
 
-}
+}*/
 
 PixelTile.prototype.putSinglePixel=function(x,y,webcolor){
 
 
 
-	this.webcolorData16[x+y*this.width]=webcolor;
+	//this.webcolorData16[x+y*this.width]=webcolor;
 
 	this.pixelPutter32[0]=webcolorToBufcolor(webcolor);
 	//alert(webcolor);
@@ -305,14 +305,27 @@ PixelTile.prototype.putSinglePixel=function(x,y,webcolor){
 
 }
 
+PixelTile.prototype.selectColor=function(x,y){
+
+	var webcolor =0;
+
+	var pixel=this.ctx.getImageData(x,y,1,1)
+	
+	webcolor|=(pixel.data[0] >>> 4)<<8;
+	webcolor|=(pixel.data[1] >>> 4)<<4;
+	webcolor|=(pixel.data[2] >>> 4)<<0;
+	
+	//alert(x+y*this.width);
+	//alert((this.imageData.data[(x+y*this.width)*4+0] >>> 4));
+	return webcolor;
+}
 
 
 
 
 
 
-
-// Code to resize the canvas when the screen is resized
+// Code to resize the canvas when the screen is resized //////////////
 
 
 window.addEventListener('resize', resizeCanvas, false);
@@ -335,18 +348,30 @@ function resizeCanvas() {
 
 
 
-// Code that actually makes the tile and draws it
+
+
+
+
+
+
+
+
+// Code that actually makes the tile and ties the ends together  //////////////////////////////////////////
+
+
+
+
 
 var tile = new PixelTile(256*2,256*2);
 
 
-for(i=0;i<tile.webcolorData16.length;i++){  //filling the screen with pink
+for(i=0;i<tile.imageData32.length;i++){  //filling the screen with pink
 
-	tile.webcolorData16[i]=initialPink;
-
+	//tile.webcolorData16[i]=initialPink;
+	tile.imageData32[i]=webcolorToBufcolor(initialPink);
 }
-tile.updateImage();
-
+//tile.updateImage();
+tile.ctx.putImageData(tile.imageData,0,0);    
 
 
 function drawStuff(){
@@ -367,6 +392,18 @@ position.y=canvas.height*0.5-tile.height*0.5*position.s;
 drawStuff();
 
 
+function selectColorFromTile(x,y){
+
+	var x=Math.floor((x-position.x)/position.s);
+	var y=Math.floor((y-position.y)/position.s);
+	
+	if(x>=tile.width||x<0){return false;}
+	if(y>=tile.height||y<0){return false;}
+	
+	currentColor=tile.selectColor(x,y);
+	updateDisplayer();
+	
+}
 
 
 
@@ -375,9 +412,7 @@ drawStuff();
 
 
 
-
-
-
+// canvas specific event listeners.
 
 function cancelEvent(e)   //used to cancel all default behavior for events. Contains lots of "platform targetting" stuff. I should probably redo this.
 {
@@ -504,18 +539,6 @@ function draw(x,y,dragging){
 	return true;
 }
 
-function selectColorFromTile(x,y){
-
-	var x=Math.floor((x-position.x)/position.s);
-	var y=Math.floor((y-position.y)/position.s);
-	
-	if(x>=tile.width||x<0){return false;}
-	if(y>=tile.height||y<0){return false;}
-	
-	currentColor=tile.webcolorData16[x+y*tile.width];
-	updateDisplayer();
-	
-}
 
 var initialMiddleMouseButtonX=0,initialMiddleMouseButtonY=0;
 var initialTilePositionX=0,initialTilePositionY=0;
@@ -635,6 +658,9 @@ canvas.addEventListener ("mouseout", onMouseLeave, false);
 canvas.addEventListener('contextmenu', function(e){return cancelEvent(e);},false);
 
 //canvas.addEventListener("")
+
+
+
 
 </script>
 
