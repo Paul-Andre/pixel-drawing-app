@@ -2,98 +2,114 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-<title>Pixel Art</title>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+	<title>Pixel Art</title>
+
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 
 
-<script src="coreUtils.js"></script>
-<script src="colorUtils.js"></script>
-<script src="BrowserDetect.js"></script>
+	<script src="coreUtils.js"></script>
+	<script src="colorUtils.js"></script>
+
+
+
+	<script>
+	if (!window.jQuery) {
+		document.write('<script src="jquery-1.9.1.min.js"><\/script>');
+	}
+	</script>
+
 
     <style type="text/css">
-body {  padding: 0; margin:0px; overflow: hidden; }
+	body {  padding: 0; margin:0px; overflow: hidden; }
 
-.mainCanvas {  position: relative;
- overflow: hidden;
+		.mainCanvas {  position: relative;
+		 overflow: hidden;
 
-	top:0px;
+			top:0px;
 	
-	left:0px;
-image-rendering: optimizeSpeed;
-image-rendering: -moz-crisp-edges;
-image-rendering: -webkit-optimize-contrast;
--ms-interpolation-mode:nearest-neighbor;
-}
+			left:0px;
+		image-rendering: optimizeSpeed;
+		image-rendering: -moz-crisp-edges;
+		image-rendering: -webkit-optimize-contrast;
+		-ms-interpolation-mode:nearest-neighbor;
+		}
 
 
 
 
-#screenContainer {  position: fixed;
+		#screenContainer {  position: fixed;
 
-	margin:0px;
-    		padding:0px; 
- 		overflow: hidden;
- 		
-	top:0%
-	right:200px;
-	left:200px;
+			margin:0px;
+					padding:0px; 
+		 		overflow: hidden;
+		 		
+			top:0%
+			right:200px;
+			left:200px;
 	
-	height:100%;
-	background-color:silver;
+			height:100%;
+			background-color:silver;
 	
-}
+		}
 
 
-    	
-    	
-    	
- .sideBar {
- 
- 	width:200px;
- }
- 
-#colorDisplayer {
+			
+			
+			
+		 .sideBar {
+		 
+		 	width:200px;
+		 }
+		 
+		#colorDisplayer {
 
- width:200px;
- height:200px;
- display: block;
-margin-left: auto;   margin-right: auto;
-margin-top:5px;margin-bottom:5px;
-position: relative;
+		 width:200px;
+		 height:200px;
+		 display: block;
+		margin-left: auto;   margin-right: auto;
+		margin-top:5px;margin-bottom:5px;
+		position: relative;
 
-border-radius: 5px;
-border-style:inset;
+		border-radius: 5px;
+		border-style:inset;
 
-}
- 
- button.colorChoice {
- 
- width:50px;
- height:50px;
- display: block;
-margin-left: auto;   margin-right: auto;
-margin-top:5px;margin-bottom:5px;
-position: relative;
+		}
+		 
+		 button.colorChoice {
+		 
+		 width:50px;
+		 height:50px;
+		 display: block;
+		margin-left: auto;   margin-right: auto;
+		margin-top:5px;margin-bottom:5px;
+		position: relative;
 
-border-radius: 15px;
- 
- }
- 
- 
- canvas.mainCanvas {
- 
- 
- 
- 
- 
- 
- 
- 
- 
- }
+		border-radius: 15px;
+		 
+		 }
+		 
+		 
+		 canvas.mainCanvas {
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 }
     </style>
 
 </head>
+
+
+
+
+
+
+
 <body>
 <div class="sideBar" style="top:0%; left:0%; position:fixed; height:100%; background:black;"></div>
 <div class="sideBar"  style="top:0%; right:0%; position:fixed; height:100%; background:black;">
@@ -129,7 +145,18 @@ border-radius: 15px;
     })();
 	
 
+//defining global objects and functions
 
+var webcolorToBufcolor=colorUtils.webcolorToBufcolor;
+
+
+var imageDataCreator=document.createElement("canvas").getContext("2d");  // I need to have a context to create imageData objects.
+
+
+var position={x:0,y:0,s:1};
+
+
+var mouse={1:false,2:false,3:false};
 
 //color defs
 var initialPink=0xf45;
@@ -182,18 +209,36 @@ function updateDisplayer(){
 	
 var mainCanvases=$(".mainCanvas");
 
-//defining global objects and functions
-
-var webcolorToBufcolor=colorUtils.webcolorToBufcolor;
 
 
-var imageDataCreator=document.createElement("canvas").getContext("2d");  // I need to have a context to create imageData objects.
+// Code to resize the canvas when the screen is resized //////////////
 
 
-var position={x:0,y:0,s:1};
+window.addEventListener('resize', resizeCanvas, false);
+
+function resizeCanvas() {
 
 
-var mouse={1:false,2:false,3:false};
+		for(var i=0;i<mainCanvases.length;i++){
+				
+				mainCanvases[i].width=window.innerWidth-500;
+				mainCanvases[i].height=window.innerHeight;	
+					
+		}		
+		
+		drawStuff()
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -242,8 +287,11 @@ if(!CRISP_SCALABLE){alert("Your browser doesn't support crisp scaling in canvas.
 
 
 
-var canvas=document.getElementById("screen");
-var ctx=canvas.getContext("2d");
+
+
+
+
+
 
 
 
@@ -325,25 +373,6 @@ PixelTile.prototype.selectColor=function(x,y){
 
 
 
-// Code to resize the canvas when the screen is resized //////////////
-
-
-window.addEventListener('resize', resizeCanvas, false);
-
-function resizeCanvas() {
-
-
-		for(var i=0;i<mainCanvases.length;i++){
-				
-				mainCanvases[i].width=window.innerWidth-500;
-				mainCanvases[i].height=window.innerHeight;	
-					
-		}		
-		
-		drawStuff()
-}
-
-
 
 
 
@@ -360,7 +389,8 @@ function resizeCanvas() {
 
 
 
-
+var canvas=document.getElementById("screen");
+var ctx=canvas.getContext("2d");
 
 var tile = new PixelTile(256*2,256*2);
 

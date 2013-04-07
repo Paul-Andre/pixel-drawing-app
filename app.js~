@@ -19,9 +19,21 @@ wss.on('connection', function wssOnConnection(ws) {
     ws.on('close',function wsOnClose(){
 		
 		
-		wsArray=_.reject(wsArray,function wsArrayReject(el){ //delete current websocket from the array.		
+		wsArray=_.reject(wsArray,function wsArrayReject(el){
+		
+			//console.log(el);
+			
+			//console.log(ws);
+			
+			console.log(el===ws);
+			
 	  		  return el===ws;
+		
 		});
+	
+		console.log("["+wsArray.join()+"]");
+     
+     
 	});
     
 });
