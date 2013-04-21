@@ -1,9 +1,7 @@
 var express = require('express')
   , app = express()
-  ,sys = require('sys');
-  
-var httpProxy= require('http-proxy')
-
+  ,sys = require('sys')
+  , httpProxy= require('http-proxy')
 
 
 app.use(express.static(__dirname+'/public'));
