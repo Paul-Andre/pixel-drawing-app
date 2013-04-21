@@ -1,27 +1,14 @@
-var WebSocketServer = require('ws').Server;
-var _ = require("underscore");
-
-var port = process.env.port||8000;
-
-var wss = new WebSocketServer({port: port});
+var express = require('express')
+  , app = express()
+  ,sys = require('sys');
   
-var wsArray=[];
-  
-wss.on('connection', function wssOnConnection(ws) {
+var httpProxy= require('http-proxy')
 
-	wsArray.push(ws);	
-	
-    ws.on('message', function wsOnMessage(message,flags) {
-        console.log('received: %s', message);
-    });
-    ws.send('something');
-    
-    ws.on('close',function wsOnClose(){
-		
-		
-		wsArray=_.reject(wsArray,function wsArrayReject(el){ //delete current websocket from the array.		
-	  		  return el===ws;
-		});
-	});
-    
-});
+
+
+app.use(express.static(__dirname+'/public'));
+app.listen(8080, "127.0.0.1");
+
+
+var proxy = httpProxy.createServer(8080, "127.0.0.1");
+proxy.listen(8000);

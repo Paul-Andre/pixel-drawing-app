@@ -17,9 +17,9 @@
 	
 	<script src="drawingCode/compatAndHelpers.js"></script>
 	<script src="drawingCode/globalVars.js"></script>
-	<script src="drawingCode/basicUI.js"></script>
-	<script src="drawingCode/PixelTile.js"></script>		
-	<script src="drawingCode/eventListeners.js"></script>	
+
+	<script src="drawingCode/PixelTile.js"></script>
+
 
 	
 	
@@ -136,11 +136,27 @@
      
      
      
-     
-     
+ 	<script src="drawingCode/basicUI.js"></script>    
+   	<script src="drawingCode/mainPart.js"></script>		
+	<script src="drawingCode/eventListeners.js"></script>	
+	  
 <script>
 
+	var someCanvas=document.createElement("canvas")
+	someCanvas.width=512;
+	someCanvas.height=512;	
+	var someCtx=someCanvas.getContext("2d");
+	someCtx.fillStyle=colorUtils.webcolorToCsscolor(0x543);
+	someCtx.fillRect(0,0,512,512);
 
+	someCtx.fillStyle=colorUtils.webcolorToCsscolor(initialPink);
+	someCtx.fillRect(35,35,32,52);	
+	
+	tile.ctx.drawImage(someCanvas,0,0);
+	
+	drawStuff();
+
+	//tile.ctx.drawRect(0,0,5,5);
 </script>
 
 </body>

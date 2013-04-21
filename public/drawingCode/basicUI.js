@@ -1,5 +1,5 @@
 
-window.addEventListener("load",function(){
+
 
 //jQuery commands for ui
 $(".sideBar").css("width",250);
@@ -68,5 +68,5 @@ drawStuff();
 }
 
 window.resizeCanvas=resizeCanvas;
+window.updateDisplayer=updateDisplayer;
 window.basicUILoaded=true;
-},false);

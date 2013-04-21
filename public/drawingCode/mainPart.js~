@@ -1,7 +1,7 @@
 // Code that actually makes the tile and ties the ends together  //////////////////////////////////////////
 
 
-window.addEventListener("load",function(){
+
 
 canvas=document.getElementById("screen");
 ctx=canvas.getContext("2d");
@@ -43,8 +43,6 @@ drawStuff();
 
 window.mainPartLoaded=true;
 
-addAllEventListeners(canvas,tile);
 
 
 
-},false);

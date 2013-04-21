@@ -1,7 +1,7 @@
 // Code that actually makes the tile and ties the ends together  //////////////////////////////////////////
 
 
-window.addEventListener("load",function(){
+
 
 canvas=document.getElementById("screen");
 ctx=canvas.getContext("2d");
@@ -28,7 +28,6 @@ function drawStuff(){
 	
 }
 
-window.drawStuff=drawStuff;
 
 if(window.basicUILoaded){
 resizeCanvas();
@@ -39,18 +38,10 @@ position.y=canvas.height*0.5-tile.height*0.5*position.s;
 drawStuff();
 }
 
-function selectColorFromTile(x,y){
-
-	var x=Math.floor((x-position.x)/position.s);
-	var y=Math.floor((y-position.y)/position.s);
-	
-	if(x>=tile.width||x<0){return false;}
-	if(y>=tile.height||y<0){return false;}
-	
-	currentColor=tile.selectColor(x,y);
-	updateDisplayer();
-	
-}
 
 
-addAllEventListeners(canvas,tile);},false);
+window.mainPartLoaded=true;
+
+
+
+

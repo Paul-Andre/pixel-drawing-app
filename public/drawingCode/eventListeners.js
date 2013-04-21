@@ -1,7 +1,22 @@
 
-function addAllEventListeners(canvas,tile){
+
 
 // canvas specific event listeners.
+
+
+function selectColorFromTile(x,y){
+
+	var x=Math.floor((x-position.x)/position.s);
+	var y=Math.floor((y-position.y)/position.s);
+	
+	if(x>=tile.width||x<0){return false;}
+	if(y>=tile.height||y<0){return false;}
+	
+	currentColor=tile.selectColor(x,y);
+	updateDisplayer();
+	
+}
+
 
 function cancelEvent(e)   //used to cancel all default behavior for events. Contains lots of "platform targetting" stuff. I should probably redo this.
 {
@@ -248,4 +263,3 @@ canvas.addEventListener('contextmenu', function(e){return cancelEvent(e);},false
 
 //canvas.addEventListener("")
 
-}

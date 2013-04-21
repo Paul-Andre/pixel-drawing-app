@@ -11,15 +11,12 @@ function PixelTile(w,h){
 	this.image.width=w;
 	this.image.height=h;
 	this.ctx=this.image.getContext("2d");
-	this.imageData=ctx.createImageData(w,h);
+	this.imageData=this.ctx.createImageData(w,h);
 	this.imageData32=new Int32Array(this.imageData.data.buffer);
 	
 	
 	this.pixelPutter=this.ctx.createImageData(1,1);
 	this.pixelPutter32=new Int32Array(this.pixelPutter.data.buffer);
-	
-	
-	//this.updateImage();
 	
 	this.t=this;
 	
