@@ -23,7 +23,7 @@ function PixelTile(w,h){
 
 PixelTile.prototype.putSinglePixel=function(x,y,webcolor){
 
-	this.pixelPutter32[0]=webcolorToBufcolor(webcolor);
+	this.pixelPutter32[0]=colorUtils.webcolorToBufcolor(webcolor);
 	this.ctx.putImageData(this.pixelPutter,x,y);
 
 }
