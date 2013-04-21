@@ -9,3 +9,4 @@ eval(filedata);
 
 module.exports=colorUtils;
 exports.testEndianness=testEndianness;
+

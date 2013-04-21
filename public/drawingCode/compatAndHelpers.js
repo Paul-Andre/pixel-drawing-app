@@ -9,6 +9,17 @@
                   };
     })();
 	
+	function Canvas(w,h){
+	
+		var canvas=document.createElement("canvas");
+		if(w)canvas.width=w;
+		if(h)canvas.height=h;
+	
+		return canvas
+	
+	
+	}
+	
 //functions for setting and testing crip scaling
 
 function setImageSmoothing(ctx,state){
@@ -24,14 +35,10 @@ function setImageSmoothing(ctx,state){
 
 function testCrispScaling(){
 
-	var sourceImg=document.createElement("canvas");
-	sourceImg.height =1;
-	sourceImg.width = 2;
+	var sourceImg=new Canvas(2,1);
 	var sourceCtx=sourceImg.getContext("2d");
 
-	var destinationImg=document.createElement("canvas");
-	destinationImg.height=2;
-	destinationImg.width=4;
+	var destinationImg=new Canvas(4,2);
 	var destinationCtx=sourceImg.getContext("2d");
 
 	setImageSmoothing(destinationCtx,false)

@@ -7,7 +7,9 @@ function PixelTile(w,h){
 
 	//this.webcolorData16=d16||(new Uint16Array(new ArrayBuffer(w*h*2)))
 	
-	this.image=new Canvas(w,h);
+	this.image=document.createElement("canvas");
+	this.image.width=w;
+	this.image.height=h;
 	this.ctx=this.image.getContext("2d");
 	this.imageData=this.ctx.createImageData(w,h);
 	this.imageData32=new Int32Array(this.imageData.data.buffer);
