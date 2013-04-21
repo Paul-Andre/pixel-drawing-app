@@ -142,7 +142,7 @@
 	  
 <script>
 
-	var someCanvas=document.createElement("canvas")
+	/*var someCanvas=document.createElement("canvas")
 	someCanvas.width=512;
 	someCanvas.height=512;	
 	var someCtx=someCanvas.getContext("2d");
@@ -154,7 +154,7 @@
 	
 	tile.ctx.drawImage(someCanvas,0,0);
 	
-	drawStuff();
+	drawStuff();*/
 
 	//tile.ctx.drawRect(0,0,5,5);
 </script>
