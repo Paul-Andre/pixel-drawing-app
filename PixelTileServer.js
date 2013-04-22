@@ -2,7 +2,7 @@ var colorUtils=require("colorUtils");
 var canvas=require("canvas");
 var websocket=require("ws");
 
-s
+
 	
 //geting PixelTile
 var filedata = fs.readFileSync('./public/PixelTile.js','utf8');
