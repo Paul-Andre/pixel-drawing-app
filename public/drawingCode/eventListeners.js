@@ -1,5 +1,20 @@
 
 
+var ws= new WebSocket("ws://"+location.host+"/");
+
+
+function sendData(x,y,color){
+
+	var buf= new ArrayBuffer(8);
+	var view=new DataView(buf);
+	
+	view.setUint16(0,1);
+	view.setUint16(2,x);
+	view.setUint16(4,y);
+	view.setUint16(6,color);
+	
+	ws.send(buf);
+}
 
 // canvas specific event listeners.
 
@@ -18,7 +33,7 @@ function selectColorFromTile(x,y){
 }
 
 
-function cancelEvent(e)   //used to cancel all default behavior for events. Contains lots of "platform targetting" stuff. I should probably redo this.
+function cancelEvent(e)   //used to cancel all default behavior for events. Contains lots of "browser quirk targetting" stuff. I should probably redo this.
 {
   //e = e ? e : window.event;
   if(e.stopPropagation)
@@ -99,41 +114,20 @@ function draw(x,y,dragging){
 	
 
     if (dragging){
-    var x1 = lastX;
-    var y1 = lastY;
-    var x2 = x;
-    var y2 = y;
-    // Define differences and error check
-    var dx = Math.abs(x2 - x1);
-    var dy = Math.abs(y2 - y1);
-    var sx = (x1 < x2) ? 1 : -1;
-    var sy = (y1 < y2) ? 1 : -1;
-    var err = dx - dy;
-   		// Set first coordinates
-  		//  tile.putSinglePixel(y1, x1,0);
-    // Main loop
-    while (!((x1 == x2) && (y1 == y2))) {
-      var e2 = err << 1;
-      if (e2 > -dy) {
-        err -= dy;
-        x1 += sx;
-      }
-      if (e2 < dx) {
-        err += dx;
-        y1 += sy;
-      }
-      // Set coordinates
-    tile.putSinglePixel(x1, y1,currentColor);
-    }
     
-    // http://stackoverflow.com/questions/4672279/bresenham-algorithm-in-javascript
+    bresenham(lastX,lastY,x,y,function(x,y){
     
+    tile.putSinglePixel(x,y,currentColor);
+        sendData(x,y,currentColor);
+    
+    })
+
 
 	}else{
 	
 	
 	    tile.putSinglePixel(x, y,currentColor);
-	
+		sendData(x,y,currentColor);
 	}
 
 	lastX=x;

@@ -54,7 +54,7 @@ function resizeCanvas() {
 					
 		}		
 		
-		window.drawStuff||window.drawStuff();
+		window.drawStuff();
 }
 
 

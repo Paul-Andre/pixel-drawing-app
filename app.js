@@ -4,11 +4,16 @@ var express = require('express')
   , httpProxy= require('http-proxy')
   ,colorUtils= require('./colorUtils.js')
   ,Canvas=require('canvas')
-  ,fs=require('fs');
+  ,fs=require('fs')
+  ,PixelTileServer=require('./PixelTileServer.js');
 
 
 app.use(express.static(__dirname+'/public'));
 app.listen(8080, "127.0.0.1");
+
+
+gameServer=new PixelTileServer(512,512,9000);
+
 
 
 var proxyServer = httpProxy.createServer(function (req, res, proxy) {
@@ -26,7 +31,7 @@ var proxyServer = httpProxy.createServer(function (req, res, proxy) {
 
 proxyServer.on('upgrade', function (req, socket, head) {
 
-    console.log(req);
+   // console.log(req);
     
     proxyServer.proxy.proxyWebSocketRequest(req, socket, head, {
     host: 'localhost',
@@ -38,41 +43,6 @@ proxyServer.on('upgrade', function (req, socket, head) {
 
 
 
-
-
-
-var WebSocketServer = require('ws').Server;
-
-
-
-var wss = new WebSocketServer({port: 9000});
-
-var lastId=0;
-
-  
-wss.on('connection', function wssOnConnectionLambda(ws) {
-	
-	var id=lastId++;
-	
-	
-	console.log("connection "+id+"\n");
-
-
-    ws.on('message', function wsOnMessageLambda(message,flags) {
-    
-        console.log('received from '+id+': ', message)
-        //console.log('flags: ', flags,"\n")
-        
-        ws.send(message, {binary:flags.binary,  masked:flags.masked})
-    });
-    
-    
-    
-    ws.send('You are now connected to this simple websocket echo server.');
-    
-    
-    ws.on('close',function wsOnCloseLambda(evt){console.log("closed "+id+"\n")});
-});
 
 
 

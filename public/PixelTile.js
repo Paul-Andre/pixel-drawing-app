@@ -1,4 +1,6 @@
 //  PixelTile class ///////////////////////////////////////////
+//Web implementation
+
 
 function PixelTile(w,h){
 
