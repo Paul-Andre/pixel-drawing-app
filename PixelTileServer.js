@@ -3,6 +3,8 @@ var Canvas=require("canvas");
 var websocket=require("ws");
 var fs=require("fs");
 var PixelTile=require("./PixelTile.js");
+var bresenham=require('./bresenham.js');
+
 
 
 function PixelTileServer(w,h,port){
@@ -55,6 +57,23 @@ function PixelTileServer(w,h,port){
 		    		tile.putSinglePixel(x,y,webcolor);
 		    		
 		    	}
+		    	else
+		    	
+		    	if (subtype==2){
+		    	
+		    		var x1= view.getUint16(2)
+		    		var y1= view.getUint16(4)
+		    		var x2= view.getUint16(6)
+		    		var y2= view.getUint16(8)
+		    		var webcolor= view.getUint16(10)
+		    	
+		    		
+		    		bresenham(x1,y1,x2,y2,function(x,y){
+		    			tile.putSinglePixel(x,y,webcolor);
+		    		});
+		    		
+		    	}
+
 		    	
 		    
 		    }

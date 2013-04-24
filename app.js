@@ -12,34 +12,56 @@ app.use(express.static(__dirname+'/public'));
 app.listen(8080, "127.0.0.1");
 
 
-gameServer=new PixelTileServer(512,512,9000);
+webProxyPort=8000;
+
+webPort=8080;
+
+
+gameProxyPort=9000;
+
+gamePort=9100;
+gameImagePort=9101;
 
 
 
-var proxyServer = httpProxy.createServer(function (req, res, proxy) {
+gameServer=new PixelTileServer(512,512,gamePort,gameImagePort);
 
 
-	
-	
+
+var webProxyServer = httpProxy.createServer(function (req, res, proxy) {
+
 	proxy.proxyRequest(req, res, {
     host: 'localhost',
-    port: 8080
+    port: webPort
   	});
   	
 });
 
+webProxyServer.listen(webProxyPort);
 
-proxyServer.on('upgrade', function (req, socket, head) {
+
+
+gameProxyServer= httpProxy.createServer(function (req, res, proxy) {
+
+	proxy.proxyRequest(req, res, {
+    host: 'localhost',
+    port: gamePort
+  	});
+  	
+});
+
+gameProxyServer.on('upgrade', function (req, socket, head) {
 
    // console.log(req);
     
-    proxyServer.proxy.proxyWebSocketRequest(req, socket, head, {
+    gameProxyServer.proxy.proxyWebSocketRequest(req, socket, head, {
     host: 'localhost',
-    port: 9000
+    port: gamePort
   });
     
 });
 
+gameProxyServer.listen(gameProxyPort);
 
 
 
@@ -53,7 +75,6 @@ proxyServer.on('upgrade', function (req, socket, head) {
 
 
 
-proxyServer.listen(8000);
 
 
 /*

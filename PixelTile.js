@@ -63,7 +63,7 @@ PixelTile.prototype.putSinglePixel=function(x,y,n){
 	this.pixelPutter.data[2]=bytes[2];
 	this.pixelPutter.data[3]=bytes[3];	
 	
-	console.log("yeah");
+	//console.log("yeah");
 
 	this.ctx.putImageData(this.pixelPutter,x,y);
 

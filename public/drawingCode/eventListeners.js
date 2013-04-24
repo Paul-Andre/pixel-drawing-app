@@ -1,9 +1,9 @@
 
 
-var ws= new WebSocket("ws://"+location.host+"/");
+var ws= new WebSocket("ws://"+location.hostname+":9000/");
 
 
-function sendData(x,y,color){
+function sendSinglePixel(x,y,color){
 
 	var buf= new ArrayBuffer(8);
 	var view=new DataView(buf);
@@ -12,6 +12,21 @@ function sendData(x,y,color){
 	view.setUint16(2,x);
 	view.setUint16(4,y);
 	view.setUint16(6,color);
+	
+	ws.send(buf);
+}
+
+function sendLine(x1,y1,x2,y2,color){
+
+	var buf= new ArrayBuffer(12);
+	var view=new DataView(buf);
+	
+	view.setUint16(0,2);
+	view.setUint16(2,x1);
+	view.setUint16(4,y1);
+	view.setUint16(6,x2);
+	view.setUint16(8,y2);
+	view.setUint16(10,color);
 	
 	ws.send(buf);
 }
@@ -118,16 +133,15 @@ function draw(x,y,dragging){
     bresenham(lastX,lastY,x,y,function(x,y){
     
     tile.putSinglePixel(x,y,currentColor);
-        sendData(x,y,currentColor);
     
     })
-
+	sendLine(lastX,lastY,x,y,currentColor);
 
 	}else{
 	
 	
 	    tile.putSinglePixel(x, y,currentColor);
-		sendData(x,y,currentColor);
+		sendSinglePixel(x,y,currentColor);
 	}
 
 	lastX=x;
