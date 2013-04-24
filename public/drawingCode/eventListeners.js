@@ -1,7 +1,55 @@
 
 
 var ws= new WebSocket("ws://"+location.hostname+":9000/");
+ws.binaryType="arraybuffer"
 
+ws.onmessage=function(msg){
+
+	var view=new DataView(msg.data);
+		    
+		    var type=view.getUint8(0);
+		    
+		    if (type==0){
+		    
+		    	var subtype=view.getUint8(1);
+		    	
+		    	if (subtype==1){
+		    	
+		    		var x= view.getUint16(2)
+		    		var y= view.getUint16(4)
+		    		var webcolor= view.getUint16(6)
+		    	
+		    		tile.putSinglePixel(x,y,webcolor);
+		    		
+		    	}
+		    	else
+		    	
+		    	if (subtype==2){
+		    	
+		    		var x1= view.getUint16(2)
+		    		var y1= view.getUint16(4)
+		    		var x2= view.getUint16(6)
+		    		var y2= view.getUint16(8)
+		    		var webcolor= view.getUint16(10)
+		    	
+		    		
+		    		bresenham(x1,y1,x2,y2,function(x,y){
+		    			tile.putSinglePixel(x,y,webcolor);
+		    		});
+		    		
+		    	}
+		    	
+		    	
+		    	
+		    
+		    }
+		    
+		    drawStuff();
+}
+
+
+
+ws.onclose=function(){alert("connection lost")};
 
 function sendSinglePixel(x,y,color){
 
@@ -30,6 +78,22 @@ function sendLine(x1,y1,x2,y2,color){
 	
 	ws.send(buf);
 }
+
+
+var img=new Image();
+img.onload=function(){tile.ctx.drawImage(img,0,0);drawStuff();}
+img.src="http://"+location.hostname+":9000/img.png"
+
+
+
+
+
+
+
+
+
+
+
 
 // canvas specific event listeners.
 

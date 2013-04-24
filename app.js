@@ -43,21 +43,23 @@ webProxyServer.listen(webProxyPort);
 
 gameProxyServer= httpProxy.createServer(function (req, res, proxy) {
 
+	if(req.url=="/img.png"){
 	proxy.proxyRequest(req, res, {
     host: 'localhost',
-    port: gamePort
+    port: gameImagePort
   	});
-  	
+  	}
 });
 
 gameProxyServer.on('upgrade', function (req, socket, head) {
 
    // console.log(req);
-    
+   if(req.url=="/"){
     gameProxyServer.proxy.proxyWebSocketRequest(req, socket, head, {
     host: 'localhost',
     port: gamePort
   });
+  }
     
 });
 

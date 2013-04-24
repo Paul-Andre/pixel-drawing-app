@@ -4,10 +4,11 @@ var websocket=require("ws");
 var fs=require("fs");
 var PixelTile=require("./PixelTile.js");
 var bresenham=require('./bresenham.js');
+var http=require("http");
 
 
 
-function PixelTileServer(w,h,port){
+function PixelTileServer(w,h,port,imageport){
 
 	this.tile=new PixelTile(w,h);
 	
@@ -75,6 +76,12 @@ function PixelTileServer(w,h,port){
 		    	}
 
 		    	
+		    	for(var i=0;i<wss.clients.length;i++){
+		    		wss.clients[i].send(message,{binary:true});
+		    	}
+		    	
+		    	
+		    	
 		    
 		    }
 		    
@@ -100,6 +107,26 @@ function PixelTileServer(w,h,port){
 
 
 
+	var imageTransmitter=http.createServer(function(req,res){
+	
+		
+		
+			var stream= tile.image.pngStream()
+		
+		
+			res.writeHead(200, {'Content-Type': 'image/png' });
+		
+			stream.on('data', function(chunk){
+	  			res.write(chunk,"binary");
+			});
+		
+			stream.on('end',function(){ 
+				res.end();
+			});
+	
+	
+	})
+	imageTransmitter.listen(imageport);
 
 
 }
