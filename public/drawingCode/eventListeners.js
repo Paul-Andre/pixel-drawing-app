@@ -1,6 +1,6 @@
 
 
-var ws= new WebSocket("ws://"+location.hostname+":9000/");
+var ws= new WebSocket("ws://"+location.host+"/game1/");
 ws.binaryType="arraybuffer"
 
 ws.onmessage=function(msg){
@@ -82,7 +82,7 @@ function sendLine(x1,y1,x2,y2,color){
 
 var img=new Image();
 img.onload=function(){tile.ctx.drawImage(img,0,0);drawStuff();}
-img.src="http://"+location.hostname+":9000/img.png"
+img.src="http://"+location.host+"/game1/img.png"
 
 
 

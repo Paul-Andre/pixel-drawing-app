@@ -30,32 +30,28 @@ gameServer=new PixelTileServer(512,512,gamePort,gameImagePort);
 
 var webProxyServer = httpProxy.createServer(function (req, res, proxy) {
 
-	proxy.proxyRequest(req, res, {
-    host: 'localhost',
-    port: webPort
-  	});
-  	
-});
-
-webProxyServer.listen(webProxyPort);
-
-
-
-gameProxyServer= httpProxy.createServer(function (req, res, proxy) {
-
-	if(req.url=="/img.png"){
+  	if(req.url=="/game1/img.png"){
 	proxy.proxyRequest(req, res, {
     host: 'localhost',
     port: gameImagePort
   	});
   	}
+  	else
+  	{
+	proxy.proxyRequest(req, res, {
+    host: 'localhost',
+    port: webPort
+  	});
+  	}
+
+  	
 });
 
-gameProxyServer.on('upgrade', function (req, socket, head) {
+webProxyServer.on('upgrade', function (req, socket, head) {
 
    // console.log(req);
-   if(req.url=="/"){
-    gameProxyServer.proxy.proxyWebSocketRequest(req, socket, head, {
+   if(req.url=="/game1/"){
+    webProxyServer.proxy.proxyWebSocketRequest(req, socket, head, {
     host: 'localhost',
     port: gamePort
   });
@@ -63,7 +59,7 @@ gameProxyServer.on('upgrade', function (req, socket, head) {
     
 });
 
-gameProxyServer.listen(gameProxyPort);
+webProxyServer.listen(webProxyPort);
 
 
 
