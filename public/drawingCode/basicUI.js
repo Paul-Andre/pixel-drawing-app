@@ -4,34 +4,20 @@
 //jQuery commands for ui
 $(".sideBar").css("width",250);
 $("#screenContainer").css("left",250).css("right",250);
-$("#pinkButton")
-		.click(function(){
-			currentColor=initialPink;
-			updateDisplayer();
-		});
-$("#blackButton")
-		.click(function(){
-			currentColor=0x122;
-			updateDisplayer();
-		});
-$("#blueButton")
-		.click(function(){
-			currentColor=0x5fa;
-			updateDisplayer();
-		});
+
 
 $("#colorPicker").each(function(){
 	
 	
 	var t =this;
 	var ctx=this.getContext("2d");
-	var tile=new PixelTile(16,16);
+	var tile=new PixelTile(16,18);
 	var image=new Image();
 	image.onload=function(){
 	
 		tile.ctx.drawImage(image,0,0);
 		setImageSmoothing(ctx,false);
-		ctx.drawImage(tile.image,0,0,208,208);
+		ctx.drawImage(tile.image,0,0,208,234);
 	
 	}
 	image.src="selector.png"
