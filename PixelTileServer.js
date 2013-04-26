@@ -12,7 +12,7 @@ function PixelTileServer(w,h,port,imageport){
 
 	this.tile=new PixelTile(w,h);
 	
-	this.tile.ctx.fillStyle=colorUtils.webcolorToCsscolor(0xf45);
+	this.tile.ctx.fillStyle=colorUtils.webcolorToCsscolor(0x566);
 	this.tile.ctx.fillRect(0,0,w,h);	
 	
 	this.width=w;
