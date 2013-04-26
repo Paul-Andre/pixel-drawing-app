@@ -81,7 +81,12 @@ function sendLine(x1,y1,x2,y2,color){
 
 
 var img=new Image();
-img.onload=function(){tile.ctx.drawImage(img,0,0);drawStuff();}
+img.onload=function(){
+
+tile.ctx.globalCompositeOperation="destination-over";
+tile.ctx.drawImage(img,0,0);
+drawStuff();
+}
 img.src="http://"+location.host+"/game1/img.png"
 
 

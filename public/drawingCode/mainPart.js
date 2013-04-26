@@ -9,15 +9,6 @@ ctx=canvas.getContext("2d");
 var tile = new PixelTile(256*2,256*2);
 
 
-for(i=0;i<tile.imageData32.length;i++){  //filling the screen with pink
-
-	//tile.webcolorData16[i]=initialPink;
-	tile.imageData32[i]=webcolorToBufcolor(initialPink);
-}
-//tile.updateImage();
-tile.ctx.putImageData(tile.imageData,0,0);    
-
-
 function drawStuff(){
 
 	ctx.clearRect(0,0,canvas.width,canvas.height)

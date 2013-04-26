@@ -5,7 +5,7 @@ var fs=require("fs");
 var PixelTile=require("./PixelTile.js");
 var bresenham=require('./bresenham.js');
 var http=require("http");
-
+var strftime=require('strftime');
 
 
 function PixelTileServer(w,h,port,imageport){
@@ -19,7 +19,9 @@ function PixelTileServer(w,h,port,imageport){
 	this.height=h;
 
 
-
+	var folderName=strftime('%F %T');
+	fs.mkdirSync("SavedImages/"+folderName);
+	
 	var wss = new websocket.Server({port: port});
 
 	var lastId=0;
@@ -87,8 +89,10 @@ function PixelTileServer(w,h,port,imageport){
 		    
 		    }
 		    
-		    ws.send(message, {binary:flags.binary,  masked:flags.masked})
 		});
+		
+		
+		
 		
 		//console.log(wss);
 		
@@ -98,18 +102,38 @@ function PixelTileServer(w,h,port,imageport){
 		
 		console.log("closed "+id+"\n")
 		
-		
-		var buf =tile.image.toBuffer();
-		fs.writeFile('closed'+id+'.png', buf);
+
 		
 		});
 	});
 
 
+function savePicture(name){ //if "blabla.png", then name="blabla"
+
+	var out = fs.createWriteStream("SavedImages/"+folderName +"/"+ name+".png")
+	  , stream = tile.image.pngStream();
+
+	stream.on('data', function(chunk){
+	  out.write(chunk);
+	});
+
+	stream.on('end', function(){
+	  console.log('saved '+name+".png");
+	});
+
+}
+
+
+var counter=0;
+setInterval(function(){
+
+	savePicture("img"+counter);
+	counter++;
+
+},30000)
+
 
 	var imageTransmitter=http.createServer(function(req,res){
-	
-		
 		
 			var stream= tile.image.pngStream()
 		
