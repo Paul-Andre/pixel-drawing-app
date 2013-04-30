@@ -36,7 +36,6 @@ function PixelTileServer(w,h,port,imageport){
 	
 		console.log("connection "+id+"\n");
 
-
 		ws.on('message', function wsOnMessageLambda(message,flags) {
 		
 		    if (flags.binary){
@@ -77,10 +76,7 @@ function PixelTileServer(w,h,port,imageport){
 		    		
 		    	}
 
-		    	
-		    	for(var i=0;i<wss.clients.length;i++){
-		    		wss.clients[i].send(message,{binary:true});
-		    	}
+				sendAsAChain(message);
 		    	
 		    	
 		    	
@@ -91,6 +87,45 @@ function PixelTileServer(w,h,port,imageport){
 		    
 		});
 		
+		
+var receivedData=[], receivedDataLength=0, timeout=null;
+	
+function sendAsAChain(buffer){
+
+	//console.log("g");	
+	
+	receivedData.push(buffer);
+	receivedDataLength+=buffer.length;
+	//console.log(buffer.length);
+	
+	clearTimeout(timeout);
+	
+	if (receivedDataLength>=96){sendData()}
+	else{timeout=setTimeout(sendData,200)}
+	
+	function sendData(){
+	
+		//console.log("pffffff");
+		
+		var message=new Buffer(receivedDataLength);
+		
+		for (var i=0, offset=0 ;i<receivedData.length;i++){
+			
+			receivedData[i].copy(message,offset)
+			offset+=receivedData[i].length;
+		}
+	
+		for(var i=0;i<wss.clients.length;i++){
+			if(wss.clients[i].readyState=websocket.OPEN)
+			wss.clients[i].send(message,{binary:true});
+		}
+		
+		receivedData.length=0;
+		receivedDataLength=0;
+	
+	}
+}	
+
 		
 		
 		
@@ -130,7 +165,7 @@ setInterval(function(){
 	savePicture("img"+counter);
 	counter++;
 
-},30000)
+},10000)
 
 
 	var imageTransmitter=http.createServer(function(req,res){

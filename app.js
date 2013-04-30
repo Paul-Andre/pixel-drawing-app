@@ -24,7 +24,7 @@ gameImagePort=9101;
 
 
 
-gameServer=new PixelTileServer(512,512,gamePort,gameImagePort);
+gameServer=new PixelTileServer(256,256,gamePort,gameImagePort);
 
 
 

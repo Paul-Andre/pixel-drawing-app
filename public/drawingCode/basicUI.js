@@ -26,41 +26,44 @@ $("#colorPicker").each(function(){
 	
 	this.ready=true
 	this.tile=tile;
-})
-.click(function(evt){
-if (this.ready){	
-//alert("yeah")
-var x, y;
+	
+	this.addEventListener("mousedown",(function(evt){
+	
+	if (this.ready){	
+	//alert("yeah")
+	var x, y;
 		
-	if(evt.offsetX) {
-		x = evt.offsetX;
-		y = evt.offsetY;
+		if(evt.offsetX) {
+			x = evt.offsetX;
+			y = evt.offsetY;
+		}
+		else if(evt.layerX) {
+			x = evt.layerX;
+			y = evt.layerY;
+		}
+	
+		console.log(evt);	
+	
+		x=Math.floor((x)*16/208);
+		y=Math.floor((y)*16/208);	
+
+	
+		if(x>=tile.width||x<0){return;}
+		if(y>=tile.height||y<0){return;}
+
+	
+	
+		currentColor=tile.selectColor(x,y);
+		updateDisplayer();
+	
+	
 	}
-	else if(evt.layerX) {
-		x = evt.layerX;
-		y = evt.layerY;
-	}
-	
-	var tile=this.tile;
 	
 	
-	x=Math.floor((x)*16/208);
-	y=Math.floor((y)*16/208);
-	
-
-	//alert(x+" "+y);		
-	if(x>=tile.width||x<0){return;}
-	if(y>=tile.height||y<0){return;}
-
 	
 	
-	currentColor=tile.selectColor(x,y);
-	updateDisplayer();
-	
-	
-}
-
-});
+	}).bind(this) )
+})
 
 
 
@@ -98,15 +101,14 @@ function resizeCanvas() {
 					
 		}		
 		
-		window.drawStuff();
+		drawStuff();
 }
 
 
 
-resizeCanvas();
+//resizeCanvas();
 //placing the tile in the center
 position.x=canvas.width*0.5-tile.width*0.5*position.s;
 position.y=canvas.height*0.5-tile.height*0.5*position.s;
 
-drawStuff();
 

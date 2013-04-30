@@ -4,47 +4,56 @@ var ws= new WebSocket("ws://"+location.host+"/game1/");
 ws.binaryType="arraybuffer"
 
 ws.onmessage=function(msg){
-
-	var view=new DataView(msg.data);
-		    
-		    var type=view.getUint8(0);
-		    
-		    if (type==0){
-		    
-		    	var subtype=view.getUint8(1);
+		   // console.log(msg.data);
+		    var offset=0;
+		    //console.log(msg);
+		    while (offset<msg.data.byteLength){
+				
+				var view=new DataView(msg.data,offset);
+				
+				var type=view.getUint8(0);
+				
+				
+				if (type==0){
+				
+					var subtype=view.getUint8(1);
+					
+					if (subtype==1){
+					
+						var x= view.getUint16(2)
+						var y= view.getUint16(4)
+						var webcolor= view.getUint16(6)
+					
+						tile.putSinglePixel(x,y,webcolor);
+						
+						offset+=8;
+						
+					}
+					else
+					
+					if (subtype==2){
+					
+						var x1= view.getUint16(2)
+						var y1= view.getUint16(4)
+						var x2= view.getUint16(6)
+						var y2= view.getUint16(8)
+						var webcolor= view.getUint16(10)
+					
+						
+						bresenham(x1,y1,x2,y2,function(x,y){
+							tile.putSinglePixel(x,y,webcolor);
+						});
+						
+						offset+=12;
+					}
 		    	
-		    	if (subtype==1){
-		    	
-		    		var x= view.getUint16(2)
-		    		var y= view.getUint16(4)
-		    		var webcolor= view.getUint16(6)
-		    	
-		    		tile.putSinglePixel(x,y,webcolor);
-		    		
-		    	}
-		    	else
-		    	
-		    	if (subtype==2){
-		    	
-		    		var x1= view.getUint16(2)
-		    		var y1= view.getUint16(4)
-		    		var x2= view.getUint16(6)
-		    		var y2= view.getUint16(8)
-		    		var webcolor= view.getUint16(10)
-		    	
-		    		
-		    		bresenham(x1,y1,x2,y2,function(x,y){
-		    			tile.putSinglePixel(x,y,webcolor);
-		    		});
-		    		
-		    	}
-		    	
-		    	
+		    	}else {alert("f...");break};
 		    	
 		    
 		    }
+		    //alert("f2");
 		    
-		    drawStuff();
+		    requestDrawStuff();
 }
 
 
@@ -78,19 +87,6 @@ function sendLine(x1,y1,x2,y2,color){
 	
 	ws.send(buf);
 }
-
-
-var img=new Image();
-img.onload=function(){
-
-tile.ctx.globalCompositeOperation="destination-over";
-tile.ctx.drawImage(img,0,0);
-drawStuff();
-}
-img.src="http://"+location.host+"/game1/img.png"
-
-
-
 
 
 
