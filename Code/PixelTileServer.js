@@ -8,7 +8,7 @@ var http=require("http");
 var strftime=require('strftime');
 
 
-function PixelTileServer(w,h,port,imageport){
+function PixelTileServer(w,h,port,imageport,save){
 
 	this.tile=new PixelTile(w,h);
 	
@@ -20,7 +20,8 @@ function PixelTileServer(w,h,port,imageport){
 
 
 	var folderName=strftime('%F %T');
-	fs.mkdirSync("../SavedImages/"+folderName);
+	
+	save?fs.mkdirSync("../SavedImages/"+folderName):0;
 	
 	var wss = new websocket.Server({port: port});
 
@@ -119,7 +120,7 @@ function sendAsAChain(buffer){
 			if(wss.clients[i].readyState=websocket.OPEN)
 			wss.clients[i].send(message,{binary:true},function(error){
 			
-				if (error!==null)console.log(error);
+				if (error!=null){console.log(error,"yahyah")};
 			
 			}
 			
@@ -148,7 +149,7 @@ function sendAsAChain(buffer){
 		});
 	});
 
-
+if (save){
 function savePicture(name){ //if "blabla.png", then name="blabla"
 
 	var out = fs.createWriteStream("../SavedImages/"+folderName +"/"+ name+".png")
@@ -172,7 +173,7 @@ setInterval(function(){
 	counter++;
 
 },10000)
-
+}
 
 	var imageTransmitter=http.createServer(function(req,res){
 		
