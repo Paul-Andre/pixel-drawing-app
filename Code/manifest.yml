@@ -1,0 +1,14 @@
+--- 
+applications: 
+  .: 
+    url: ${name}.${target-base}
+    instances: 1
+    name: pixelplotter
+    mem: 1G
+    framework: 
+      info: 
+        description: Node.js Application
+        exec: 
+        mem: 64M
+      name: node
+    infra: aws
