@@ -20,7 +20,7 @@ function PixelTileServer(w,h,port,imageport){
 
 
 	var folderName=strftime('%F %T');
-	fs.mkdirSync("SavedImages/"+folderName);
+	fs.mkdirSync("../SavedImages/"+folderName);
 	
 	var wss = new websocket.Server({port: port});
 
@@ -117,7 +117,13 @@ function sendAsAChain(buffer){
 	
 		for(var i=0;i<wss.clients.length;i++){
 			if(wss.clients[i].readyState=websocket.OPEN)
-			wss.clients[i].send(message,{binary:true});
+			wss.clients[i].send(message,{binary:true},function(error){
+			
+				if (error!==null)console.log(error);
+			
+			}
+			
+			);
 		}
 		
 		receivedData.length=0;
@@ -145,7 +151,7 @@ function sendAsAChain(buffer){
 
 function savePicture(name){ //if "blabla.png", then name="blabla"
 
-	var out = fs.createWriteStream("SavedImages/"+folderName +"/"+ name+".png")
+	var out = fs.createWriteStream("../SavedImages/"+folderName +"/"+ name+".png")
 	  , stream = tile.image.pngStream();
 
 	stream.on('data', function(chunk){

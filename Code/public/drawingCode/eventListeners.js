@@ -60,6 +60,8 @@ ws.onmessage=function(msg){
 
 ws.onclose=function(){alert("connection lost")};
 
+
+ws.onerror=function(evt){console.log(evt);alert(evt);}
 function sendSinglePixel(x,y,color){
 
 	var buf= new ArrayBuffer(8);

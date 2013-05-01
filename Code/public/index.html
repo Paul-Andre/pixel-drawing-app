@@ -5,10 +5,14 @@
 	<title>Pixel Art</title>
 
 	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-	
+	<script src ="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
 	<script>
 	if (!window.jQuery) {
 		document.write('<script src="jquery-1.9.1.min.js"><\/script>');
+		document.write('<script src="jquery-ui-1.10.2.min.js"><\/script>');
+		
+		document.write('<link rel="stylesheet" type="text/css" href="css/jquery-ui-1.10.2.min.css"\/\>');	
 	}
 	</script>
 	
@@ -116,11 +120,13 @@
 
 <body>
 <div class="sideBar" style="top:0%; left:0%; position:fixed; height:100%; background:black;">
-<div style="color:white; padding:10px; display: block;"><p>Controls:</p><p>Left mouse click to draw, right mouse button to pick a color. Middle button to navigate and mouse wheel to zoom.</p><p>MINIMALISM? WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY. WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY. WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY</p></div></div>
+<div style="color:white; padding:10px; display: block;"><p>Controls:</p><p>Left mouse click to draw, right mouse button to select a color from the picture. Middle button to navigate and mouse wheel to zoom. You can chose colors from the palette on the right side. A real color picker will come some time soon.</p><p>Please keep stuff appropriate.</p></div></div>
 <div class="sideBar"  style="top:0%; right:0%; position:fixed; height:100%; background:black;">
 <div id="colorDisplayer"></div>
 
-<div id="colorPickerBorder"><canvas id="colorPicker" width="208" height="234" style="position: fixed" ></canvas></div>
+<div id="colorPickerBorder"><canvas id="colorPicker" width="208" height="234" style="position: fixed" ></canvas>
+
+</div><div id="zoomContainer" ><button id="zoomIn">plus</button><button id="zoomOut">minus</button></div>
 </div>   
 <div  id="screenContainer">
 
