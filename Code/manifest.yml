@@ -3,7 +3,7 @@ applications:
   .: 
     url: ${name}.${target-base}
     instances: 1
-    name: pixelplotter
+    name: pixeldrawer
     mem: 1G
     framework: 
       info: 

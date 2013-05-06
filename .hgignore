@@ -3,3 +3,4 @@ syntax: glob
 
 SavedImages/**
 BestImages/**
+Deployment/**
