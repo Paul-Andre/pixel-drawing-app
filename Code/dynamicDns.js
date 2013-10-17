@@ -6,7 +6,8 @@ var ip='~~~~~'
 
 function initDnsUpdater(){
 
-setInterval(function(){
+
+function check(){
 http.get("http://myip.dnsdynamic.org/",function(res){
 
 res.setEncoding('utf8');
@@ -39,7 +40,11 @@ if (d!=ip){
 
 });
 }).on('error',console.error);
-},10000)
+}
+
+
+setInterval(check,10000)
+check();
 };
 //initDnsUpdater();
 

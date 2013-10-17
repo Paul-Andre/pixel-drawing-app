@@ -58,7 +58,7 @@ ws.onmessage=function(msg){
 
 
 
-ws.onclose=function(){alert("connection lost")};
+ws.onclose=function(){alert("connection lost\n Please wait a few seconds and refresh page")};
 
 
 ws.onerror=function(evt){console.log(evt);alert(evt);}

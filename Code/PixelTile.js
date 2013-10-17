@@ -9,15 +9,16 @@ var colorUtils=require("./colorUtils");
 
 
 
-function PixelTile(w,h){
+function PixelTile(cnv){
 
-	this.width=w;
-	this.height=h;
+	var w=this.width=cnv.width;
+	var h=this.height=cnv.height;
 
 	//this.webcolorData16=d16||(new Uint16Array(new ArrayBuffer(w*h*2)))
 	
 	this.image=new Canvas(w,h);
 	this.ctx=this.image.getContext("2d");
+	this.ctx.drawImage(cnv,0,0);
 	this.imageData=this.ctx.createImageData(w,h);
 	
 	

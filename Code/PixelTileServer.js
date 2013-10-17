@@ -13,13 +13,32 @@ function PixelTileServer(w,h,port,imageport,save){
 	
 	console.log("picture tile server start");
 	
-	this.tile=new PixelTile(w,h);
+	var origImg
 	
-	this.tile.ctx.fillStyle=colorUtils.webcolorToCsscolor(0xddd);
-	this.tile.ctx.fillRect(0,0,w,h);	
+	var origData=fs.readFileSync(__dirname + '/image.png')
 	
-	this.width=w;
-	this.height=h;
+	origImg = new Canvas.Image; // Create a new Image
+    
+    origImg.src = origData;
+
+
+    
+	
+	
+	
+	this.tile=new PixelTile(origImg);
+	
+	
+	
+	
+	
+	//this.tile.ctx.fillStyle=colorUtils.webcolorToCsscolor(0xddd);
+	//this.tile.ctx.fillRect(0,0,w,h);
+	
+		
+	
+	this.width=origImg.width;
+	this.height=origImg.height;
 
 
 	var folderName=strftime('%F %T');
@@ -125,7 +144,7 @@ function sendAsAChain(buffer){
 			if(wss.clients[i].readyState=websocket.OPEN)
 			wss.clients[i].send(message,{binary:true},function(error){
 			
-				if (error!=null){console.log(error,"yahyah")};
+				if (error!=null){console.error(error)};
 			
 			}
 			
@@ -134,7 +153,8 @@ function sendAsAChain(buffer){
 		
 		receivedData.length=0;
 		receivedDataLength=0;
-	
+		
+		savePicture(__dirname+"/image.png")
 	}
 }	
 
@@ -155,10 +175,10 @@ function sendAsAChain(buffer){
 		});
 	});
 
-if (save){
-function savePicture(name){ //if "blabla.png", then name="blabla"
 
-	var out = fs.createWriteStream("../SavedImages/"+folderName +"/"+ name+".png")
+function savePicture(path){ 
+
+	var out = fs.createWriteStream(path)
 	  , stream = tile.image.pngStream();
 
 	stream.on('data', function(chunk){
@@ -172,10 +192,14 @@ function savePicture(name){ //if "blabla.png", then name="blabla"
 }
 
 
+if (save){
+
+
+
 var counter=0;
 setInterval(function(){
 
-	savePicture("img"+counter);
+	savePicture("../SavedImages/"+folderName +"/"+ "img"+counter+".png");
 	counter++;
 
 },120000)
