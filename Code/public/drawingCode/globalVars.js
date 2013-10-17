@@ -18,3 +18,5 @@ var initialPink=0xf45;
 //currentColor
 var currentColor=0x122;
 
+var tile;
+

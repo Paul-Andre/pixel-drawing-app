@@ -6,10 +6,13 @@ var PixelTile=require("./PixelTile.js");
 var bresenham=require('./bresenham.js');
 var http=require("http");
 var strftime=require('strftime');
-
+var DataView=require("buffer-dataview");
 
 function PixelTileServer(w,h,port,imageport,save){
-
+	
+	
+	console.log("picture tile server start");
+	
 	this.tile=new PixelTile(w,h);
 	
 	this.tile.ctx.fillStyle=colorUtils.webcolorToCsscolor(0xddd);
@@ -24,6 +27,7 @@ function PixelTileServer(w,h,port,imageport,save){
 	save?fs.mkdirSync("../SavedImages/"+folderName):0;
 	
 	var wss = new websocket.Server({port: port});
+	//console.log(wss);
 
 	var lastId=0;
 	
@@ -36,12 +40,13 @@ function PixelTileServer(w,h,port,imageport,save){
 	
 	
 		console.log("connection "+id+"\n");
+		console.log("people online: "+wss.clients.length);
 
 		ws.on('message', function wsOnMessageLambda(message,flags) {
 		
 		    if (flags.binary){
 		    
-		   // console.log(message);
+		  // console.log(message);
 		    	
 		    var view=new DataView(message);
 		    
@@ -143,7 +148,8 @@ function sendAsAChain(buffer){
 		
 		
 		console.log("closed "+id+"\n")
-		
+			console.log("people online: "+wss.clients.length);
+
 
 		
 		});
@@ -160,7 +166,7 @@ function savePicture(name){ //if "blabla.png", then name="blabla"
 	});
 
 	stream.on('end', function(){
-	  console.log('saved '+name+".png");
+	//  console.log('saved '+name+".png");
 	});
 
 }
@@ -172,7 +178,7 @@ setInterval(function(){
 	savePicture("img"+counter);
 	counter++;
 
-},10000)
+},120000)
 }
 
 	var imageTransmitter=http.createServer(function(req,res){

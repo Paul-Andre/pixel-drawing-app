@@ -5,32 +5,35 @@ var express = require('express')
   ,colorUtils= require('./colorUtils.js')
   ,Canvas=require('canvas')
   ,fs=require('fs')
-  ,PixelTileServer=require('./PixelTileServer.js');
-
+  ,PixelTileServer=require('./PixelTileServer.js')
+  ,url=require('url');
+  
+(require('./dynamicDns.js'))()  //init dynamicDns updater.
 
 app.use(express.static(__dirname+'/public'));
 app.listen(8080, "127.0.0.1");
 
 
-webProxyPort=8000;
+var webProxyPort=8000;
 
-webPort=8080;
-
-
-gameProxyPort=9000;
-
-gamePort=9100;
-gameImagePort=9101;
+var webPort=8080;
 
 
+//var gameProxyPort=9000;
 
-gameServer=new PixelTileServer(256,256,gamePort,gameImagePort);
+var gamePort=9100;
+var gameImagePort=9101;
+
+
+
+gameServer=new PixelTileServer(64,64,gamePort,gameImagePort,true);
 
 
 
 var webProxyServer = httpProxy.createServer(function (req, res, proxy) {
 
-  	if(req.url=="/game1/img.png"){
+  	if(req.url.substring(0, "/game1".length) === "/game1"){
+  	//console.log("hello from if");
 	proxy.proxyRequest(req, res, {
     host: 'localhost',
     port: gameImagePort
@@ -38,6 +41,7 @@ var webProxyServer = httpProxy.createServer(function (req, res, proxy) {
   	}
   	else
   	{
+  	//console.log("hello from else");
 	proxy.proxyRequest(req, res, {
     host: 'localhost',
     port: webPort
@@ -49,7 +53,7 @@ var webProxyServer = httpProxy.createServer(function (req, res, proxy) {
 
 webProxyServer.on('upgrade', function (req, socket, head) {
 
-   // console.log(req);
+    console.log(req);
    if(req.url=="/game1/"){
     webProxyServer.proxy.proxyWebSocketRequest(req, socket, head, {
     host: 'localhost',
