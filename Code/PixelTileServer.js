@@ -155,6 +155,7 @@ function sendAsAChain(buffer){
 		receivedDataLength=0;
 		
 		savePicture(__dirname+"/image.png")
+		savePictureToFolder();
 	}
 }	
 
@@ -175,6 +176,29 @@ function sendAsAChain(buffer){
 		});
 	});
 
+var canSaveAgain=true
+var needToSave=false;
+function savePictureToFolder(){
+
+		needToSave=true;
+		
+		if(canSaveAgain){
+		savePicture("../SavedImages/"+folderName +"/"+ (strftime("%s"))+ ".png");
+		canSaveAgain=false
+		needToSave=false;
+		setTimeout(function(){
+		canSaveAgain=true;if(needToSave){
+		
+		savePictureToFolder()
+		}
+		},5000)
+		
+		
+		}else{
+		needToSave=true;
+		}
+
+}
 
 function savePicture(path){ 
 
@@ -192,18 +216,18 @@ function savePicture(path){
 }
 
 
-if (save){
+/*if (save){
 
 
 
 var counter=0;
 setInterval(function(){
 
-	savePicture("../SavedImages/"+folderName +"/"+ "img"+counter+".png");
+	savePicture("../SavedImages/"+folderName +"/"+ (strftime("%s%L"))+ ".png");
 	counter++;
 
 },120000)
-}
+}*/
 
 	var imageTransmitter=http.createServer(function(req,res){
 		
