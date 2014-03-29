@@ -19,7 +19,7 @@ if (d!=ip){
 
 		console.log("Changing IP from "+ip+" to "+d)
 
-		https.get('https://chapeaufeutre@gmail.com:DynamicSystem@www.dnsdynamic.org/api/?hostname=pixels.dns53.biz &myip='+d, function(res) {
+		https.get('https://chapeaufeutre@gmail.com:DynamicSystem@www.dnsdynamic.org/api/?hostname=pixels.dns53.biz&myip='+d, function(res) {
 		//  console.log("statusCode: ", res.statusCode);
 		 // console.log("headers: ", res.headers);
 			res.setEncoding('utf8');
