@@ -1,0 +1,14 @@
+{
+  "name": "pixelDrawingThing",
+  "version": "0.0.4",
+  "private": true,
+  "dependencies": {
+    "express": "3.x",
+    "canvas": "*",
+    "http-proxy": "*",
+    "ws":"*",
+    "strftime":"*",
+    "forever-monitor":"*",
+    "buffer-dataview":"*"
+  }
+}
