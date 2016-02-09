@@ -8,7 +8,6 @@ var express = require('express')
   ,PixelTileServer=require('./PixelTileServer.js')
   ,url=require('url');
   
-(require('./dynamicDns.js'))()  //init dynamicDns updater.
 
 app.use(express.static(__dirname+'/public'));
 app.listen(8080, "127.0.0.1");
