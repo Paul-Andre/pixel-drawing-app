@@ -145,13 +145,17 @@ function webcolorToCsscolor(n){
 		
 		bytes.reverse(); // turn rgb into bgr
 		
-		return "#"+bytes[0].toString(16)+bytes[0].toString(16)+bytes[1].toString(16)+bytes[1].toString(16)+bytes[2].toString(16)+bytes[2].toString(16);
+		return "#"+bytes[0].toString(16)+bytes[0].toString(16)
+			+ bytes[1].toString(16)+bytes[1].toString(16)
+			+ bytes[2].toString(16)+bytes[2].toString(16);
 
 }
 
 
 ///////////////////////////////////////////
 function profileWebcolorToBufColorConversion(times){
+
+//////////////////// FIXME THings were refactored, and cod ehere hasn't changed. XXX 
 
 	var randArray=[];
 

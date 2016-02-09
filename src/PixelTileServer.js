@@ -15,9 +15,9 @@ function PixelTileServer(w,h,port,imageport,save){
 	
 	var origImg
 	
-	var origData=fs.readFileSync(__dirname + '/image.png')
+	var origData=fs.readFileSync(__dirname + '/blankImage.png')
 	
-	origImg = new Canvas.Image; // Create a new Image
+	origImg = new Canvas.Image(); // Create a new Image
     
     origImg.src = origData;
 
