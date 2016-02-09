@@ -38,7 +38,7 @@ function PixelTileServer(w,h,port,imageport,save){
 
 
 	if(save){
-		// if SAVED_IMAGE_PATH directory doesn't exist, create it.
+		// if SAVED_IMAGES_PATH directory doesn't exist, create it.
 		try {
 			fs.mkdirSync(SAVED_IMAGES_PATH);
 		} catch(e) {
@@ -186,7 +186,7 @@ function savePictureToFolder(){
 		needToSave=true;
 		
 		if(canSaveAgain){
-		savePicture("../SavedImages/"+folderName +"/"+ (strftime("%s"))+ ".png");
+		savePicture(SAVED_IMAGES_PATH+folderName +"/"+ (strftime("%s"))+ ".png");
 		canSaveAgain=false
 		needToSave=false;
 		setTimeout(function(){
