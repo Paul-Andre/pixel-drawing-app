@@ -8,6 +8,9 @@ var http=require("http");
 var strftime=require('strftime');
 var DataView=require("buffer-dataview");
 
+var SAVED_IMAGES_PATH = "SavedImages/"
+
+// save says whether of not to regularly save the images
 function PixelTileServer(w,h,port,imageport,save){
 	
 	
@@ -19,31 +22,31 @@ function PixelTileServer(w,h,port,imageport,save){
 	
 	origImg = new Canvas.Image(); // Create a new Image
     
-    origImg.src = origData;
+  origImg.src = origData;
 
-
-    
-	
 	
 	
 	this.tile=new PixelTile(origImg);
 	
 	
-	
-	
-	
 	//this.tile.ctx.fillStyle=colorUtils.webcolorToCsscolor(0xddd);
 	//this.tile.ctx.fillRect(0,0,w,h);
 	
-		
 	
 	this.width=origImg.width;
 	this.height=origImg.height;
 
 
-	var folderName=strftime('%F %T');
-	
-	save?fs.mkdirSync("../SavedImages/"+folderName):0;
+	if(save){
+		// if SAVED_IMAGE_PATH directory doesn't exist, create it.
+		try {
+			fs.mkdirSync(SAVED_IMAGES_PATH);
+		} catch(e) {
+			if ( e.code != 'EEXIST' ) throw e;
+		}
+		var folderName=strftime('%F %T');
+		fs.mkdirSync(SAVED_IMAGES_PATH+folderName);
+	}
 	
 	var wss = new websocket.Server({port: port});
 	//console.log(wss);
