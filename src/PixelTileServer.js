@@ -11,7 +11,7 @@ var DataView=require("buffer-dataview");
 var SAVED_IMAGES_PATH = "SavedImages/"
 
 // save says whether of not to regularly save the images
-function PixelTileServer(w,h,port,imageport,save){
+function PixelTileServer(port,imageport,save){
 	
 	
 	console.log("picture tile server start");

@@ -10,8 +10,5 @@
     "strftime": "*",
     "forever-monitor": "*",
     "buffer-dataview": "*"
-  },
-  "devDependencies": {
-    "gulp": "~3.7.0"
   }
 }

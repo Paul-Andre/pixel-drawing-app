@@ -6,13 +6,9 @@ var express = require('express')
   ,Canvas=require('canvas')
   ,fs=require('fs')
   ,PixelTileServer=require('./PixelTileServer.js')
-  ,url=require('url');
+  ,url=require('url')
+	,http=require('http');
   
-
-app.use(express.static(__dirname+'/public'));
-app.listen(8080, "127.0.0.1");
-
-
 var webProxyPort=8000;
 
 var webPort=8080;
@@ -25,64 +21,38 @@ var gameImagePort=9101;
 
 
 
-gameServer=new PixelTileServer(64,64,gamePort,gameImagePort,true);
+app.use(express.static(__dirname+'/public'));
+app.listen(webPort, "127.0.0.1");
 
 
 
-var webProxyServer = httpProxy.createServer(function (req, res, proxy) {
+var gameServer=new PixelTileServer(gamePort,gameImagePort,true);
+
+var proxy = httpProxy.createServer({ws:true});
+
+var proxyServer = http.createServer(function (req, res ) {
 
   	if(req.url.substring(0, "/game1".length) === "/game1"){
-  	//console.log("hello from if");
-	proxy.proxyRequest(req, res, {
-    host: 'localhost',
-    port: gameImagePort
-  	});
+			console.log("adfasdfasdf");
+			proxy.web(req, res, {
+				target: "http://127.0.0.1:"+gameImagePort
+			});
   	}
-  	else
-  	{
-  	//console.log("hello from else");
-	proxy.proxyRequest(req, res, {
-    host: 'localhost',
-    port: webPort
-  	});
+  	else{
+			proxy.web(req, res, {
+				target: "http://127.0.0.1:"+webPort
+			});
   	}
-
-  	
 });
 
-webProxyServer.on('upgrade', function (req, socket, head) {
 
-    console.log(req);
-   if(req.url=="/game1/"){
-    webProxyServer.proxy.proxyWebSocketRequest(req, socket, head, {
-    host: 'localhost',
-    port: gamePort
-  });
+proxyServer.on('upgrade', function (req, socket, head) {
+	//console.log(req);
+	if(req.url=="/game1/"){
+		proxy.ws(req, socket, head, {
+				target: "ws://127.0.0.1:"+gamePort
+		});
   }
-    
 });
 
-webProxyServer.listen(webProxyPort);
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-//testing colorUtils
-console.log(colorUtils.webcolorToCsscolor(0xfff));
-//testing Canvas
-var canvas=new Canvas(512,512);
-var ctx=canvas.getContext("2d");
-ctx.fillRect(5,24,234,234);
-var buf =canvas.toBuffer();
-fs.writeFile('image.png', buf);
-*/
+proxyServer.listen(8000);
