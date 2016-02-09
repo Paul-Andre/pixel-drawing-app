@@ -1,6 +1,6 @@
 
 
-var ws= new WebSocket("ws://"+location.hostname+":9100");
+var ws= new WebSocket("ws://"+location.hostname+":"+wsPort);
 ws.binaryType="arraybuffer"
 
 ws.onmessage=function(msg){

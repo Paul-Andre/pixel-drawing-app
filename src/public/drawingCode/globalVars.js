@@ -20,3 +20,5 @@ var currentColor=0x122;
 
 var tile;
 
+var wsPort = 9100;
+var imagePort = 9101;

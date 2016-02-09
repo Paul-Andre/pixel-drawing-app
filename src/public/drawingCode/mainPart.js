@@ -41,7 +41,8 @@ img.onerror=function(evt){
 	drawStuff();
 
 }
-img.src="http://"+location.host+"/game1/img.png"
+img.src="http://"+location.hostname+":"+imagePort+"/img.png";
+alert(img.src);
 
 
 
