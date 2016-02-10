@@ -6,11 +6,14 @@
 //
 //   Unless otherwise stated, all the colors are 12 bit, with 4 bits for every channel
 //
-//   Webcolor is a two byte color format of my making, that has a 12 bit precision
+//   Webcolor is a two byte color format that has a 12 bits
 //
 //   Bufcolor is a 4 byte color format that can be dirrectly pasted in the javascript
 // image data buffer, with endianness took in consideration.
 //
+//   Csscolor is the color format used in CSS, like #ffffff.
+
+// The point of this whole thing was to transfer 12bit colors through WebSockets.
 //
 
 
@@ -30,7 +33,7 @@
 	
 	
 ///////////////////////////////////////////
-	function rgbToBufcolor(r,g,b){	    // ? TODO: Remove the transissional Webcolor
+	function rgbToBufcolor(r,g,b){	    // ? TODO: Remove the transitional Webcolor
 		return WebcololToBufcolor(((r&15)<<8) | ((g&15)<<4) | ((b&15)<<0));
 	}
 		

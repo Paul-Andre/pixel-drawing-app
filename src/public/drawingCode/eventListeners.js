@@ -3,65 +3,77 @@
 var ws= new WebSocket("ws://"+location.host+"/game1/");
 ws.binaryType="arraybuffer"
 
+
+
 ws.onmessage=function(msg){
-		   // console.log(msg.data);
-		    var offset=0;
-		    //console.log(msg);
-		    while (offset<msg.data.byteLength){
+ // console.log(msg.data);
+	var offset=0;
+
+	while (offset<msg.data.byteLength){
+		
+		var view=new DataView(msg.data,offset);
+		
+		var type=view.getUint8(0);
+		
+		
+		if (type==0){
+			// drawing something
+		
+			var subtype=view.getUint8(1);
+			
+			if (subtype==1){
+				// drawing a single pixel
+			
+				var x= view.getUint16(2)
+				var y= view.getUint16(4)
+				var webcolor= view.getUint16(6)
+			
+				tile.putSinglePixel(x,y,webcolor);
 				
-				var view=new DataView(msg.data,offset);
+				offset+=8;
 				
-				var type=view.getUint8(0);
+			}
+			else if (subtype==2){
+				// drawing a line
+			
+				var x1= view.getUint16(2)
+				var y1= view.getUint16(4)
+				var x2= view.getUint16(6)
+				var y2= view.getUint16(8)
+				var webcolor= view.getUint16(10)
+			
 				
+				bresenham(x1,y1,x2,y2,function(x,y){
+					tile.putSinglePixel(x,y,webcolor);
+				});
 				
-				if (type==0){
-				
-					var subtype=view.getUint8(1);
-					
-					if (subtype==1){
-					
-						var x= view.getUint16(2)
-						var y= view.getUint16(4)
-						var webcolor= view.getUint16(6)
-					
-						tile.putSinglePixel(x,y,webcolor);
-						
-						offset+=8;
-						
-					}
-					else
-					
-					if (subtype==2){
-					
-						var x1= view.getUint16(2)
-						var y1= view.getUint16(4)
-						var x2= view.getUint16(6)
-						var y2= view.getUint16(8)
-						var webcolor= view.getUint16(10)
-					
-						
-						bresenham(x1,y1,x2,y2,function(x,y){
-							tile.putSinglePixel(x,y,webcolor);
-						});
-						
-						offset+=12;
-					}
-		    	
-		    	}else {alert("f...");break};
-		    	
-		    
-		    }
-		    //alert("f2");
-		    
-		    requestDrawStuff();
+				offset+=12;
+			}
+			
+		}
+		
+		else{
+			alert("Unrecognized command received from server.");
+			break;
+		}
+			
+	}
+	
+	requestRedraw();
 }
 
 
 
-ws.onclose=function(){alert("connection lost\n Please wait a few seconds and refresh page")};
+ws.onclose=function(){
+	alert("connection lost\n Please wait a few seconds and refresh page")
+};
 
 
-ws.onerror=function(evt){console.log(evt);alert(evt);}
+ws.onerror=function(evt){
+	console.log(evt);alert(evt);
+};
+
+
 function sendSinglePixel(x,y,color){
 
 	var buf= new ArrayBuffer(8);
@@ -89,11 +101,6 @@ function sendLine(x1,y1,x2,y2,color){
 	
 	ws.send(buf);
 }
-
-
-
-
-
 
 
 
@@ -168,7 +175,7 @@ function onMouseWheel(evt){
 			
 	}*/
 
-	drawStuff();
+	requestRedraw();
 			
 	return cancelEvent(evt);
 				
@@ -283,11 +290,6 @@ function onMouseMove(evt){
 		position.x=initialTilePositionX+(x-initialMiddleMouseButtonX);
 		position.y=initialTilePositionY+(y-initialMiddleMouseButtonY);
 		
-		/*if(BrowserDetect.browser=="Firefox"){requestRedraw();}
-		else{
-			drawStuff();
-		}*/
-		
 		
 		requestRedraw();
 	}
@@ -305,17 +307,6 @@ function onMouseLeave(evt){
 	
 	return	cancelEvent(evt);
 }
-
-var requestedRedraw=false;
-function requestRedraw(){
-
-	if(!requestedRedraw){
-		requestAnimationFrame(function(){drawStuff();requestedRedraw=false});
-	}
-
-}
-
-
 
 // addEventListeners /////
 

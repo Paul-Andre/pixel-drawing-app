@@ -33,7 +33,6 @@ var proxy = httpProxy.createServer({ws:true});
 var proxyServer = http.createServer(function (req, res ) {
 
   	if(req.url.substring(0, "/game1".length) === "/game1"){
-			console.log("adfasdfasdf");
 			proxy.web(req, res, {
 				target: "http://127.0.0.1:"+gameImagePort
 			});
