@@ -1,3 +1,14 @@
+function setCurrentColorFromRgba(rgba){
+
+	currentColor.bufcolor=colorUtils.rgbaToBufcolor(rgba);
+	currentColor.webcolor=colorUtils.rgbToWebcolor(rgba);
+	currentColor.csscolor=colorUtils.rgbToCsscolor(rgba);
+
+	updateDisplayer();
+}
+
+
+
 var colorPicker = document.getElementById("colorPicker");
 
 
@@ -43,8 +54,7 @@ var colorPicker = document.getElementById("colorPicker");
 			if(y>=tile.height||y<0){return;}
 
 		
-			currentColor=tile.selectColor(x,y);
-			updateDisplayer();
+			setCurrentColorFromRgba(tile.selectColor(x,y));
 		
 		}
 
@@ -59,7 +69,7 @@ var colorDisplayer=document.getElementById("colorDisplayer");
 
 function updateDisplayer(){
 
-	colorDisplayer.style.backgroundColor= colorUtils.webcolorToCsscolor(currentColor);
+	colorDisplayer.style.backgroundColor= currentColor.csscolor;
 
 }
 	updateDisplayer();
@@ -88,7 +98,7 @@ function resizeCanvas() {
 					
 		}		
 		
-		drawStuff();
+		requestRedraw();
 }
 
   
@@ -98,7 +108,7 @@ function resizeCanvas() {
     position.s++;
     position.x=canvas.width*0.5-tile.width*0.5*position.s;
 position.y=canvas.height*0.5-tile.height*0.5*position.s;
-    drawStuff();
+    requestRedraw();
     
     },false);
   	document.getElementById("zoomOutButton")
@@ -107,7 +117,7 @@ position.y=canvas.height*0.5-tile.height*0.5*position.s;
     position.s=Math.max(position.s-1,1)
     position.x=canvas.width*0.5-tile.width*0.5*position.s;
 position.y=canvas.height*0.5-tile.height*0.5*position.s;
-    drawStuff();
+    requestRedraw();
     
     },false);
 

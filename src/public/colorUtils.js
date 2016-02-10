@@ -12,6 +12,8 @@
 // image data buffer, with endianness took in consideration.
 //
 //   Csscolor is the color format used in CSS, like #ffffff.
+//   
+//   Rgba is an array of numbers from 0 to 255. red green blue alpha
 
 // The point of this whole thing was to transfer 12bit colors through WebSockets.
 //
@@ -24,21 +26,50 @@
 
 	var LITTLE_ENDIAN=testEndianness();
 
+	function hex(n){
+		if (n>=16){
+			return n.toString(16);
+		}
+		else{
+			return "0"+n.toString(16);
+		}
+	}
 
 
-///////////////////////////////////////////
-	function rgbToWebcolor(r,g,b){
-		return ((r&15)<<8) | ((g&15)<<4) | ((b&15)<<0);
+	function rgbToWebcolor(rgba){
+		return ((rgba[0]>>4)<<8) | ((rgba[1]>>4)<<4) | ((rgba[2]>>4)<<0);
 	}
 	
-	
-///////////////////////////////////////////
-	function rgbToBufcolor(r,g,b){	    // ? TODO: Remove the transitional Webcolor
-		return WebcololToBufcolor(((r&15)<<8) | ((g&15)<<4) | ((b&15)<<0));
+	function rgbaToBufcolor(rgba){
+		if(LITTLE_ENDIAN){
+			return (rgba[3]<<24) | (rgba[2]<<16) | (rgba[1]<<8) | (rgba[0]<<0);
+		}
+		else{
+			return (rgba[0]<<24) | (rgba[1]<<16) | (rgba[2]<<8) | (rgba[3]<<0);
+		}
 	}
-		
 
-///////////////////////////////////////////
+	function rgbToCsscolor(rgba){
+		return "#" + hex(rgba[0]) + hex(rgba[1])
+			+ hex(rgba[2])
+			;
+	}
+
+	
+	function bufcolorToRgba(bufcolor){
+		var b0 = bufcolor & 255;
+		var b1 = (bufcolor >> 8) & 255;
+		var b2 = (bufcolor >> 16) & 255;
+		var b3 = (bufcolor >> 24) & 255;
+		if(LITTLE_ENDIAN){
+			return [b0,b1,b2,b3];
+		}
+		else{
+			return [b3,b2,b1,b0];
+		}
+	}
+
+
 	function webcolorToBufcolor(n){
 
 		var bits = [(n>>>0)&1,(n>>>1)&1,(n>>>2)&1,(n>>>3)&1,(n>>>4)&1,(n>>>5)&1,(n>>>6)&1,(n>>>7)&1,(n>>>8)&1,(n>>>9)&1,(n>>>10)&1,(n>>>11)&1];
@@ -77,53 +108,20 @@
 
 	}
 
-///////////////////////////////////////////
-	function bufcolorToWebcolor(n){   //doesn't work
+	function bufcolorToWebcolor(bufcolor){
 
-		var bits = [(n>>> 0)&1,(n>>> 1)&1,(n>>> 2)&1,(n>>> 3)&1,(n>>> 4)&1,(n>>> 5)&1,(n>>> 6)&1,(n>>> 7)&1,
-					(n>>> 8)&1,(n>>> 9)&1,(n>>>10)&1,(n>>>11)&1,(n>>>12)&1,(n>>>13)&1,(n>>>14)&1,(n>>>15)&1,
-					(n>>>16)&1,(n>>>17)&1,(n>>>18)&1,(n>>>19)&1,(n>>>20)&1,(n>>>21)&1,(n>>>22)&1,(n>>>23)&1,
-					(n>>>24)&1,(n>>>25)&1,(n>>>26)&1,(n>>>27)&1,(n>>>28)&1,(n>>>29)&1,(n>>>30)&1,(n>>>31)&1];
-	
-		//  ??? TODO: Remove the bits array altogether.
-	
-		var bytes=[];
-	
-		for (var i=0; i<4;i++){
-		
-			var byte=0;
-		
-			byte|=bits[i*8+0];
-			byte|=bits[i*8+1]<<1;
-			byte|=bits[i*8+2]<<2;
-			byte|=bits[i*8+3]<<3;		
-			byte|=bits[i*8+4]<<4;
-			byte|=bits[i*8+5]<<5;	
-			byte|=bits[i*8+6]<<6;
-			byte|=bits[i*8+7]<<7;		
-		
-		
-			bytes[i]=byte;	
-		
-		}
-		
-		
-	
-		alert(bytes[0]);  //little end alerts red
-		
-		
-	
-		//bytes[3]=255; // the alpha channel is opaque
-	
-		
-		// ? TODO: Test big-endian systems!
-	
-		return bytes[0]| (bytes[1]<<8) | (bytes[2]<<16) | (bytes[3]<<24);
+		var rgba = bufcolorToRgba(bufcolor);
 
+		var webcolor = 0;
+
+    webcolor|=(rgba[0] >>> 4)<<8;
+    webcolor|=(rgba[1] >>> 4)<<4;
+    webcolor|=(rgba[2] >>> 4)<<0;
+    
+    return webcolor;
 	}
 	
 	
-///////////////////////////////////////////	
 function webcolorToCsscolor(n){
 
 			var bits = [(n>>>0)&1,(n>>>1)&1,(n>>>2)&1,(n>>>3)&1,(n>>>4)&1,(n>>>5)&1,(n>>>6)&1,(n>>>7)&1,(n>>>8)&1,(n>>>9)&1,(n>>>10)&1,(n>>>11)&1];
@@ -155,54 +153,16 @@ function webcolorToCsscolor(n){
 }
 
 
-///////////////////////////////////////////
-function profileWebcolorToBufColorConversion(times){
-
-//////////////////// FIXME THings were refactored, and cod ehere hasn't changed. XXX 
-
-	var randArray=[];
-
-	for (var i=0; i<times; i++){
-
-		randArray[i]=Math.floor(Math.random()*4096);  //preparing random numbers to be processed.
-
-	}
-
-	var lastTime=new Date();          // taking the time before
-
-	for (var i=0; i<times; i++){
-	
-		randArray[i]=websafeToReal(randArray[i]);     //processing 
-
-	}
-
-	var timeSpent= new Date()-lastTime;   // taking the time after, and calculating the difference
-
-
-	return timeSpent;   // milliseconds
-}
-
-
-
-
-
-
-
-
 return {
 			"webcolorToBufcolor": webcolorToBufcolor,
 			"webcolorToCsscolor": webcolorToCsscolor,
-			"profileWebcolorToBufColorConversion": profileWebcolorToBufColorConversion,
 			"rgbToWebcolor":rgbToWebcolor,
-			"rgbToBufcolor":rgbToBufcolor,
+			"rgbaToBufcolor":rgbaToBufcolor,
+			"rgbToCsscolor":rgbToCsscolor,
 			"bufcolorToWebcolor":bufcolorToWebcolor
 	}
 
 
 
 })();
-
-
-
-
 

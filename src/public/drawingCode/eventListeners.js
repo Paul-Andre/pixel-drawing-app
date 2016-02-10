@@ -27,8 +27,9 @@ ws.onmessage=function(msg){
 				var x= view.getUint16(2)
 				var y= view.getUint16(4)
 				var webcolor= view.getUint16(6)
+				var bufcolor = colorUtils.webcolorToBufcolor(webcolor);
 			
-				tile.putSinglePixel(x,y,webcolor);
+				tile.putSinglePixel(x,y,bufcolor);
 				
 				offset+=8;
 				
@@ -36,15 +37,16 @@ ws.onmessage=function(msg){
 			else if (subtype==2){
 				// drawing a line
 			
-				var x1= view.getUint16(2)
-				var y1= view.getUint16(4)
-				var x2= view.getUint16(6)
-				var y2= view.getUint16(8)
-				var webcolor= view.getUint16(10)
-			
+				var x1= view.getUint16(2);
+				var y1= view.getUint16(4);
+				var x2= view.getUint16(6);
+				var y2= view.getUint16(8);
+				var webcolor= view.getUint16(10);
+				var bufcolor = colorUtils.webcolorToBufcolor(webcolor);
 				
+			
 				bresenham(x1,y1,x2,y2,function(x,y){
-					tile.putSinglePixel(x,y,webcolor);
+					tile.putSinglePixel(x,y,bufcolor);
 				});
 				
 				offset+=12;
@@ -74,7 +76,7 @@ ws.onerror=function(evt){
 };
 
 
-function sendSinglePixel(x,y,color){
+function sendSinglePixel(x,y,webcolor){
 
 	var buf= new ArrayBuffer(8);
 	var view=new DataView(buf);
@@ -82,12 +84,12 @@ function sendSinglePixel(x,y,color){
 	view.setUint16(0,1);
 	view.setUint16(2,x);
 	view.setUint16(4,y);
-	view.setUint16(6,color);
+	view.setUint16(6,webcolor);
 	
 	ws.send(buf);
 }
 
-function sendLine(x1,y1,x2,y2,color){
+function sendLine(x1,y1,x2,y2,webcolor){
 
 	var buf= new ArrayBuffer(12);
 	var view=new DataView(buf);
@@ -97,7 +99,7 @@ function sendLine(x1,y1,x2,y2,color){
 	view.setUint16(4,y1);
 	view.setUint16(6,x2);
 	view.setUint16(8,y2);
-	view.setUint16(10,color);
+	view.setUint16(10,webcolor);
 	
 	ws.send(buf);
 }
@@ -108,18 +110,6 @@ function sendLine(x1,y1,x2,y2,color){
 // canvas specific event listeners.
 
 
-function selectColorFromTile(x,y){
-
-	var x=Math.floor((x-position.x)/position.s);
-	var y=Math.floor((y-position.y)/position.s);
-	
-	if(x>=tile.width||x<0){return false;}
-	if(y>=tile.height||y<0){return false;}
-	
-	currentColor=tile.selectColor(x,y);
-	updateDisplayer();
-	
-}
 
 
 function cancelEvent(e)   //used to cancel all default behavior for events. Contains lots of "browser quirk targetting" stuff. I should probably redo this.
@@ -189,6 +179,7 @@ function onKeyDown(evt){
 	requestRedraw();
 }
 
+// This is for when the user draws lines
 var lastX=0, lastY=0;
 function draw(x,y,dragging){
 
@@ -206,16 +197,16 @@ function draw(x,y,dragging){
     
     bresenham(lastX,lastY,x,y,function(x,y){
     
-    tile.putSinglePixel(x,y,currentColor);
+    tile.putSinglePixel(x,y,currentColor.bufcolor);
     
     })
-	sendLine(lastX,lastY,x,y,currentColor);
+	sendLine(lastX,lastY,x,y,currentColor.webcolor);
 
 	}else{
 	
 	
-	    tile.putSinglePixel(x, y,currentColor);
-		sendSinglePixel(x,y,currentColor);
+	    tile.putSinglePixel(x, y,currentColor.bufcolor);
+		sendSinglePixel(x,y,currentColor.webcolor);
 	}
 
 	lastX=x;
@@ -258,8 +249,14 @@ function onMouseDown(evt){
 	}
 	
 	if(evt.which==3){
+			
+		var tileX=Math.floor((x-position.x)/position.s);
+		var tileY=Math.floor((y-position.y)/position.s);
 		
-		selectColorFromTile(x,y);
+		if(tileX>=tile.width||tileX<0){return false;}
+		if(tileY>=tile.height||tileY<0){return false;}
+		
+		setCurrentColorFromRgba(tile.selectColor(tileX,tileY));
 	}
 	
 	return	cancelEvent(evt);

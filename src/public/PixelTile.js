@@ -23,23 +23,16 @@ function PixelTile(w,h){
 }
 
 
-PixelTile.prototype.putSinglePixel=function(x,y,webcolor){
+PixelTile.prototype.putSinglePixel=function(x,y,bufcolor){
 
-	this.pixelPutter32[0]=colorUtils.webcolorToBufcolor(webcolor);
+	this.pixelPutter32[0]=bufcolor;
 	this.ctx.putImageData(this.pixelPutter,x,y);
 
 }
 
+// returns a rgba array
 PixelTile.prototype.selectColor=function(x,y){
-
-	var webcolor =0;
-
-	var pixel=this.ctx.getImageData(x,y,1,1)
-	
-	webcolor|=(pixel.data[0] >>> 4)<<8;
-	webcolor|=(pixel.data[1] >>> 4)<<4;
-	webcolor|=(pixel.data[2] >>> 4)<<0;
-	
-	return webcolor;
+	var data =this.ctx.getImageData(x,y,1,1).data;
+	return [data[0], data[1], data[2], data[3]];
 }
 
